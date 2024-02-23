@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:memo_app_flutter/ui/atoms/h1_text.dart';
+import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
+import 'package:memo_app_flutter/ui/molecules/item_unit.dart';
 
 class MemoCard extends StatelessWidget {
   final String title;
@@ -9,15 +10,9 @@ class MemoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        H1Text(
-          text: title,
-        ),
-        Text(title),
-        Text(title),
-        Text(title),
-        Text(title),
-        Text(title),
-        Text(title),
+        const ItemUnit(
+          text: "Todoリスト",
+        )
       ],
     );
   }
