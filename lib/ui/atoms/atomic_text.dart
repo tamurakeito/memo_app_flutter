@@ -8,18 +8,23 @@ class AtomicText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle;
+    // TextStyle textStyle;
+    double size;
+    FontWeight weight;
     switch (style) {
       case AtomicTextStyle.h1:
-        textStyle = const TextStyle(
-            fontSize: kFontSizeHeadlineH1, fontWeight: FontWeight.bold);
+        size = kFontSizeHeadlineH1;
+        weight = FontWeight.bold;
         break;
       default:
-        textStyle =
-            const TextStyle(fontSize: 14, fontWeight: FontWeight.normal);
+        size = kFontSizeHeadlineH1;
+        weight = FontWeight.bold;
+        break;
     }
     ;
-    return Text(text, style: textStyle);
+    return Text(text,
+        style: TextStyle(
+            fontFamily: 'NotoSansJP', fontSize: size, fontWeight: weight));
   }
 }
 

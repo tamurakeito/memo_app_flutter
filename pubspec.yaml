@@ -22,4 +22,6 @@ flutter:
   fonts:
     - family: NotoSansJP
       fonts:
-        - asset: assets/fonts/NotoSansJP-VariableFont_wght.ttf
+        - asset: assets/fonts/NotoSansCJKjp-Regular.otf
+        - asset: assets/fonts/NotoSansCJKjp-Bold.otf
+          weight: 700

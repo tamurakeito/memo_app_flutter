@@ -2,23 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class AtomicCircle extends StatelessWidget {
-  const AtomicCircle({super.key});
+  final AtomicCircleType type;
+  const AtomicCircle({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
+    Color color;
+    switch (type) {
+      case AtomicCircleType.gray:
+        color = kGray300;
+        break;
+      default:
+        color = kWhite;
+        break;
+    }
     return Container(
       decoration: BoxDecoration(
-        color: Colors.transparent, // 枠線の外側の色
         shape: BoxShape.circle,
         border: Border.all(
           color: kGray900, // 枠線の色
-          width: 2, // 枠線の太さ
+          width: 1.5, // 枠線の太さ
         ),
       ),
-      child: const CircleAvatar(
+      child: CircleAvatar(
         radius: 8,
-        backgroundColor: kGray300,
+        backgroundColor: color,
       ),
     );
   }
 }
+
+enum AtomicCircleType { gray, white }
