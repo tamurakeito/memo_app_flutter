@@ -21,7 +21,7 @@ class AtomicCircle extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(
           color: kGray900, // 枠線の色
-          width: 1.5, // 枠線の太さ
+          width: 1.2, // 枠線の太さ
         ),
       ),
       child: CircleAvatar(

@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
+import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class MemoCard extends StatelessWidget {
@@ -9,14 +13,56 @@ class MemoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        TitleBlock(
-          text: "タスクリスト",
+        // 未完了リスト
+        Container(
+          padding: const EdgeInsets.only(bottom: 12),
+          decoration:
+              const BoxDecoration(border: Border(bottom: AtomicBorder())),
+          child: const Column(
+            children: [
+              TitleBlock(
+                text: "タスクリスト",
+              ),
+              ListBlock(isCompleted: false, text: "アプリ作る"),
+              ListBlock(isCompleted: false, text: "chatGTP"),
+              ListBlock(isCompleted: false, text: "服買う"),
+            ],
+          ),
         ),
-        ListBlock(text: "アプリ作る"),
-        ListBlock(text: "chatGTP"),
-        ListBlock(text: "服買う"),
+        // 完了済リスト
+        Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 18, 12),
+              child: Row(
+                children: [
+                  const AtomicText(
+                      style: AtomicTextStyle.md,
+                      type: AtomicTextColor.light,
+                      text: "完了"),
+                  const Spacer(),
+                  Button(
+                      onPressed: () {
+                        //
+                      },
+                      child: Transform.rotate(
+                        angle: pi / 2,
+                        child: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 18,
+                          color: kGray500,
+                        ),
+                      ))
+                ],
+              ),
+            ),
+            const ListBlock(isCompleted: true, text: "アプリ作る"),
+            const ListBlock(isCompleted: true, text: "chatGTP"),
+            const ListBlock(isCompleted: true, text: "服買う"),
+          ],
+        ),
       ],
     );
   }
@@ -29,8 +75,7 @@ class TitleBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-      decoration: const BoxDecoration(color: kWhite),
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
       child: Row(children: [
         const AtomicCircle(
           type: AtomicCircleType.gray,
@@ -38,29 +83,58 @@ class TitleBlock extends StatelessWidget {
         const SizedBox(
           width: 16,
         ),
-        AtomicText(style: AtomicTextStyle.h1, text: text)
+        AtomicText(style: AtomicTextStyle.h2, text: text)
       ]),
     );
   }
 }
 
 class ListBlock extends StatelessWidget {
+  final bool isCompleted;
   final String text;
-  const ListBlock({super.key, required this.text});
+  const ListBlock({super.key, required this.isCompleted, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-      decoration: const BoxDecoration(color: kWhite),
+      padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
       child: Row(children: [
-        const AtomicCircle(
-          type: AtomicCircleType.white,
-        ),
+        !isCompleted
+            ? const AtomicCircle(
+                type: AtomicCircleType.white,
+              )
+            : const Icon(
+                Icons.check,
+                size: 18,
+                color: kGray500,
+              ),
         const SizedBox(
           width: 16,
         ),
-        AtomicText(style: AtomicTextStyle.h1, text: text)
+        AtomicText(
+            style: AtomicTextStyle.md,
+            type: !isCompleted ? AtomicTextColor.dark : AtomicTextColor.light,
+            text: text),
+        const Spacer(),
+        !isCompleted
+            ? Button(
+                onPressed: () {
+                  //
+                },
+                child: const Icon(
+                  Icons.check,
+                  size: 18,
+                  color: kGray700,
+                ))
+            : Button(
+                onPressed: () {
+                  //
+                },
+                child: const Icon(
+                  Icons.clear,
+                  size: 18,
+                  color: kGray500,
+                )),
       ]),
     );
   }

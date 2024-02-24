@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class TopBar extends StatelessWidget {
@@ -8,7 +9,7 @@ class TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(18, 12, 18, 12),
+      padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: const BoxDecoration(
         // 下端に線を追加する
         border: Border(bottom: AtomicBorder()),
@@ -51,8 +52,8 @@ class TopBarIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkResponse(
-      onTap: onPressed,
+    return Button(
+      onPressed: onPressed,
       child: Icon(
         icon,
         size: 24,
