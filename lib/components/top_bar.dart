@@ -4,7 +4,9 @@ import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class TopBar extends StatelessWidget {
-  const TopBar({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const TopBar({super.key, required this.scaffoldKey});
+  void openDrawer() => scaffoldKey.currentState?.openDrawer();
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class TopBar extends StatelessWidget {
           TopBarIconButton(
             icon: Icons.menu,
             onPressed: () {
-              // navigation open
+              openDrawer();
             },
           ),
           const Spacer(),

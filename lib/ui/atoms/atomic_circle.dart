@@ -3,7 +3,9 @@ import 'package:memo_app_flutter/utils/style.dart';
 
 class AtomicCircle extends StatelessWidget {
   final AtomicCircleType type;
-  const AtomicCircle({super.key, required this.type});
+  final double? radius;
+  const AtomicCircle({super.key, required this.type, double? radius})
+      : radius = radius ?? 8.0;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +27,7 @@ class AtomicCircle extends StatelessWidget {
         ),
       ),
       child: CircleAvatar(
-        radius: 8,
+        radius: radius,
         backgroundColor: color,
       ),
     );
