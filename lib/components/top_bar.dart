@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/provider/provider.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
-class TopBar extends StatelessWidget {
+class TopBar extends ConsumerWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   const TopBar({super.key, required this.scaffoldKey});
   void openDrawer() => scaffoldKey.currentState?.openDrawer();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isOpen = ref.watch(isMenuOpenProvider);
     return Container(
       padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: const BoxDecoration(
@@ -26,7 +29,7 @@ class TopBar extends StatelessWidget {
           ),
           const Spacer(),
           TopBarIconButton(
-            icon: Icons.bookmark,
+            icon: Icons.bookmark_border,
             onPressed: () {
               // お気に入りアクション
             },
@@ -37,7 +40,7 @@ class TopBar extends StatelessWidget {
           TopBarIconButton(
             icon: Icons.more_vert,
             onPressed: () {
-              // menu open
+              ref.read(isMenuOpenProvider.notifier).state = true;
             },
           ),
         ],

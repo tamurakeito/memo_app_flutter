@@ -47,3 +47,5 @@ const Color kGray900 = Color(0xff373737);
 const Color kWhite = Color(0xffffffff);
 const Color kWhiteSoft = kGray400;
 const Color kWhiteHover = kGray300;
+// other
+const Color kScrimColor = Color(0x8A000000);
