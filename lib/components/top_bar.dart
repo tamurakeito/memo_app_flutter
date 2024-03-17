@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/provider/provider.dart';
@@ -22,7 +23,7 @@ class TopBar extends ConsumerWidget {
       child: Row(
         children: [
           TopBarIconButton(
-            icon: Icons.menu,
+            icon: FeatherIcons.menu,
             onPressed: () {
               openDrawer();
             },
@@ -38,7 +39,7 @@ class TopBar extends ConsumerWidget {
             width: 18,
           ),
           TopBarIconButton(
-            icon: Icons.more_vert,
+            icon: FeatherIcons.moreVertical,
             onPressed: () {
               ref.read(isMenuOpenProvider.notifier).state = true;
             },

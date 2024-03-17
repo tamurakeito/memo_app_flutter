@@ -21,7 +21,7 @@ class Navigation extends StatelessWidget {
               decoration:
                   const BoxDecoration(border: Border(bottom: AtomicBorder())),
             ),
-            MemoListBox(
+            const MemoListBox(
               isTagged: true,
               memoList: [
                 MemoListBlock(
@@ -41,7 +41,7 @@ class Navigation extends StatelessWidget {
                 ),
               ],
             ),
-            MemoListBox(
+            const MemoListBox(
               isTagged: false,
               memoList: [
                 MemoListBlock(

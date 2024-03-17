@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/provider/provider.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/ui/molecules/barrier_scrim.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -25,22 +27,10 @@ class Menu extends HookConsumerWidget {
 
     return isOpen
         ? Stack(children: [
-            GestureDetector(
-                onTap: () {
-                  isVisible.value = false;
-
-                  Timer(
-                      Duration(milliseconds: duration),
-                      () =>
-                          ref.read(isMenuOpenProvider.notifier).state = false);
-                },
-                child: AnimatedOpacity(
-                  opacity: isVisible.value ? 1 : 0,
-                  duration: Duration(milliseconds: duration),
-                  child: Container(
-                    color: kScrimColor,
-                  ),
-                )),
+            BarrierScrim(
+                isActive: isVisible,
+                onPressed: () =>
+                    ref.read(isMenuOpenProvider.notifier).state = false),
             SafeArea(
                 child: Align(
                     alignment: Alignment.topRight,
@@ -71,7 +61,7 @@ class Menu extends HookConsumerWidget {
                                   ),
                                 ),
                                 MenuBlock(
-                                  icon: Icons.edit_outlined,
+                                  icon: LineIcons.penFancy,
                                   text: "メモを編集",
                                   onPressed: () {
                                     ref
@@ -80,7 +70,7 @@ class Menu extends HookConsumerWidget {
                                   },
                                 ),
                                 MenuBlock(
-                                  icon: Icons.delete_outline,
+                                  icon: LineIcons.alternateTrashAlt,
                                   text: "メモを削除",
                                   onPressed: () {},
                                 ),
@@ -91,17 +81,17 @@ class Menu extends HookConsumerWidget {
                                       border: Border(bottom: AtomicBorder())),
                                 ),
                                 MenuBlock(
-                                  icon: Icons.circle_outlined,
+                                  icon: LineIcons.circle,
                                   text: "全てを未完了に",
                                   onPressed: () {},
                                 ),
                                 MenuBlock(
-                                  icon: Icons.checklist_outlined,
+                                  icon: LineIcons.checkCircle,
                                   text: "全てを完了済に",
                                   onPressed: () {},
                                 ),
                                 MenuBlock(
-                                  icon: Icons.cancel_outlined,
+                                  icon: LineIcons.timesCircle,
                                   text: "完了済を削除",
                                   onPressed: () {},
                                 ),
@@ -178,7 +168,7 @@ class MenuBlock extends StatelessWidget {
           child: Row(children: [
             Icon(
               icon,
-              size: 18,
+              size: 20,
               color: kGray900,
             ),
             const SizedBox(
