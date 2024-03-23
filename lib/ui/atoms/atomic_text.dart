@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class AtomicText extends StatelessWidget {
+  final String data;
   final AtomicTextStyle style;
   final AtomicTextColor? type;
-  final String text;
-  const AtomicText(
-      {super.key, required this.style, this.type, required this.text});
+  const AtomicText(this.data, {super.key, required this.style, this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +68,7 @@ class AtomicText extends StatelessWidget {
         break;
     }
     ;
-    return Text(text,
+    return Text(data,
         style: TextStyle(
             fontFamily: 'NotoSansJP',
             fontSize: size,

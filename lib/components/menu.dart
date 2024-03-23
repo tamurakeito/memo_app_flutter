@@ -29,7 +29,7 @@ class Menu extends HookConsumerWidget {
         ? Stack(children: [
             BarrierScrim(
                 isActive: isVisible,
-                onPressed: () =>
+                onTap: () =>
                     ref.read(isMenuOpenProvider.notifier).state = false),
             SafeArea(
                 child: Align(
@@ -53,9 +53,10 @@ class Menu extends HookConsumerWidget {
                                   child: const Row(
                                     children: [
                                       AtomicText(
-                                          style: AtomicTextStyle.h4,
-                                          type: AtomicTextColor.light,
-                                          text: "メモ"),
+                                        "メモ",
+                                        style: AtomicTextStyle.h4,
+                                        type: AtomicTextColor.light,
+                                      ),
                                       Spacer()
                                     ],
                                   ),
@@ -175,9 +176,10 @@ class MenuBlock extends StatelessWidget {
               width: 16,
             ),
             AtomicText(
-                style: AtomicTextStyle.h4,
-                type: AtomicTextColor.dark,
-                text: text),
+              text,
+              style: AtomicTextStyle.h4,
+              type: AtomicTextColor.dark,
+            ),
             const Spacer(),
           ]),
         ));

@@ -39,9 +39,10 @@ class MemoCard extends StatelessWidget {
               child: Row(
                 children: [
                   const AtomicText(
-                      style: AtomicTextStyle.md,
-                      type: AtomicTextColor.light,
-                      text: "完了"),
+                    "完了",
+                    style: AtomicTextStyle.md,
+                    type: AtomicTextColor.light,
+                  ),
                   const Spacer(),
                   Button(
                       onPressed: () {
@@ -83,7 +84,7 @@ class TitleBlock extends StatelessWidget {
         const SizedBox(
           width: 16,
         ),
-        AtomicText(style: AtomicTextStyle.h2, text: text)
+        AtomicText(text, style: AtomicTextStyle.h2)
       ]),
     );
   }
@@ -112,9 +113,10 @@ class ListBlock extends StatelessWidget {
           width: 16,
         ),
         AtomicText(
-            style: AtomicTextStyle.md,
-            type: !isCompleted ? AtomicTextColor.dark : AtomicTextColor.light,
-            text: text),
+          text,
+          style: AtomicTextStyle.md,
+          type: !isCompleted ? AtomicTextColor.dark : AtomicTextColor.light,
+        ),
         const Spacer(),
         !isCompleted
             ? Button(

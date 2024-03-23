@@ -92,9 +92,10 @@ class MemoListBox extends StatelessWidget {
                 width: 16,
               ),
               AtomicText(
-                  style: AtomicTextStyle.h4,
-                  type: AtomicTextColor.light,
-                  text: isTagged ? "固定" : "リスト"),
+                isTagged ? "固定" : "リスト",
+                style: AtomicTextStyle.h4,
+                type: AtomicTextColor.light,
+              ),
             ]),
           ),
           ...memoList
@@ -127,10 +128,9 @@ class MemoListBlock extends StatelessWidget {
         const SizedBox(
           width: 16,
         ),
-        AtomicText(
-            style: AtomicTextStyle.h5, type: AtomicTextColor.dark, text: text),
+        AtomicText(text, style: AtomicTextStyle.h5, type: AtomicTextColor.dark),
         const Spacer(),
-        AtomicText(style: AtomicTextStyle.sm, text: length.toString())
+        AtomicText(length.toString(), style: AtomicTextStyle.sm)
       ]),
     );
   }

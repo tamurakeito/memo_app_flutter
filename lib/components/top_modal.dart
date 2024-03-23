@@ -32,8 +32,9 @@ class TopModal extends HookConsumerWidget {
     FocusNode myFocusNode = FocusNode();
 
     useEffect(() {
-      if (isOpen)
+      if (isOpen) {
         Timer(const Duration(milliseconds: 1), () => isVisible.value = true);
+      }
       myFocusNode.requestFocus();
     }, [isOpen]);
 
@@ -61,13 +62,18 @@ class TopModal extends HookConsumerWidget {
       curve: Curves.easeInOut,
     ));
 
+    void handleClose() {
+      ref.read(isTopModalOpenProvider.notifier).state = false;
+    }
+
     return isOpen
         ? Stack(
             children: [
               BarrierScrim(
-                  isActive: isVisible,
-                  onPressed: () =>
-                      ref.read(isTopModalOpenProvider.notifier).state = false),
+                isActive: isVisible,
+                onTap: handleClose,
+                onDragUp: handleClose,
+              ),
               SlideTransition(
                 position: animation,
                 child: Container(

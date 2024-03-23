@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:memo_app_flutter/components/add_task_modal.dart';
+import 'package:memo_app_flutter/components/bottom_modal.dart';
 import 'package:memo_app_flutter/components/menu.dart';
 import 'package:memo_app_flutter/components/navigation.dart';
+import 'package:memo_app_flutter/components/remove_memo_modal.dart';
 import 'package:memo_app_flutter/components/top_bar.dart';
 import 'package:memo_app_flutter/components/memo_card.dart';
 import 'package:memo_app_flutter/components/swiper.dart';
@@ -17,6 +19,9 @@ class HomeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isMenuOpen = ref.watch(isMenuOpenProvider);
+    final isTopModalOpen = ref.watch(isTopModalOpenProvider);
+    final isBottomModalOpen = ref.watch(isBottomModalOpenProvider);
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: kWhite,
@@ -24,46 +29,15 @@ class HomeView extends ConsumerWidget {
         children: [
           GestureDetector(
             onVerticalDragUpdate: (details) {
-              if (details.delta.dy > 0) {
-                // 上方向にスワイプ（dyが負の値）
-                ref.read(isTopModalOpenProvider.notifier).state = true;
-                // print("swipe down");
-              }
-              if (details.delta.dy < 0) {
-                // 上方向にスワイプ（dyが負の値）
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          ListTile(
-                            leading: Icon(Icons.music_note),
-                            title: Text('Music'),
-                            onTap: () {
-                              // アクションをここに追加
-                              Navigator.pop(context);
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.photo_album),
-                            title: Text('Photos'),
-                            onTap: () {
-                              // アクションをここに追加
-                              Navigator.pop(context);
-                            },
-                          ),
-                          ListTile(
-                            leading: Icon(Icons.videocam),
-                            title: Text('Video'),
-                            onTap: () {
-                              // アクションをここに追加
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      );
-                    });
+              if (!isMenuOpen && !isTopModalOpen && !isBottomModalOpen) {
+                if (details.delta.dy > 0) {
+                  // 下方向にスワイプ
+                  ref.read(isTopModalOpenProvider.notifier).state = true;
+                }
+                if (details.delta.dy < 0) {
+                  // 上方向にスワイプ
+                  ref.read(isBottomModalOpenProvider.notifier).state = true;
+                }
               }
             },
             child: Container(
@@ -77,7 +51,8 @@ class HomeView extends ConsumerWidget {
             ),
           ),
           const Menu(),
-          AddTaskModal()
+          AddTaskModal(),
+          RemoveMemoModal(),
         ],
       ),
       drawer: const Navigation(),
