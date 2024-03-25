@@ -9,7 +9,7 @@ import 'package:memo_app_flutter/components/top_bar.dart';
 import 'package:memo_app_flutter/components/memo_card.dart';
 import 'package:memo_app_flutter/components/swiper.dart';
 import 'package:memo_app_flutter/components/top_modal.dart';
-import 'package:memo_app_flutter/provider/provider.dart';
+import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -45,7 +45,8 @@ class HomeView extends ConsumerWidget {
               child: SafeArea(
                 child: Column(children: [
                   TopBar(scaffoldKey: _scaffoldKey),
-                  const MemoCard(title: "Todoリスト")
+                  // const MemoCard(title: "Todoリスト")
+                  Swiper(),
                 ]),
               ),
             ),

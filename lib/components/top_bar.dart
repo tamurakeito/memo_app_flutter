@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
-import 'package:memo_app_flutter/provider/provider.dart';
+import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 

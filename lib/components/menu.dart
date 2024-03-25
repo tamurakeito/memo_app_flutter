@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
-import 'package:memo_app_flutter/provider/provider.dart';
+import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/ui/molecules/barrier_scrim.dart';

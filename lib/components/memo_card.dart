@@ -20,10 +20,10 @@ class MemoCard extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 12),
           decoration:
               const BoxDecoration(border: Border(bottom: AtomicBorder())),
-          child: const Column(
+          child: Column(
             children: [
               TitleBlock(
-                text: "タスクリスト",
+                text: title,
               ),
               ListBlock(isCompleted: false, text: "アプリ作る"),
               ListBlock(isCompleted: false, text: "chatGTP"),
