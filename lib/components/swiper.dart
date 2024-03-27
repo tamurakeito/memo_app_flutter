@@ -66,21 +66,21 @@ class Swiper extends HookConsumerWidget {
               duration: duration,
               position: positionPageLeft,
               child: MemoCard(
-                title: (page - 1).toString(),
+                title: "タスクリスト${page - 1}",
               ),
             ),
             SwiperPage(
               duration: duration,
               position: positionPageCenter,
               child: MemoCard(
-                title: page.toString(),
+                title: "タスクリスト$page",
               ),
             ),
             SwiperPage(
               duration: duration,
               position: positionPageRight,
               child: MemoCard(
-                title: (page + 1).toString(),
+                title: "タスクリスト${page + 1}",
               ),
             ),
           ],
