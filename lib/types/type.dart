@@ -19,6 +19,15 @@ class MemoSummaryType extends MemoType {
     required bool tag,
     required this.length,
   }) : super(id: id, name: name, tag: tag);
+
+  factory MemoSummaryType.fromJson(Map<String, dynamic> json) {
+    return MemoSummaryType(
+      id: json['id'],
+      name: json['name'],
+      tag: json['tag'],
+      length: json['length'],
+    );
+  }
 }
 
 class MemoDetailType extends MemoType {

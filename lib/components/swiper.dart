@@ -62,27 +62,31 @@ class Swiper extends HookConsumerWidget {
         onHorizontalDragEnd: (details) {},
         child: Stack(
           children: [
-            SwiperPage(
-              duration: duration,
-              position: positionPageLeft,
-              child: MemoCard(
-                title: "タスクリスト${page - 1}",
-              ),
-            ),
+            if (page > 0) ...[
+              SwiperPage(
+                duration: duration,
+                position: positionPageLeft,
+                child: MemoCard(
+                  title: list[page - 1].name,
+                ),
+              )
+            ],
             SwiperPage(
               duration: duration,
               position: positionPageCenter,
               child: MemoCard(
-                title: "タスクリスト$page",
+                title: list[page].name,
               ),
             ),
-            SwiperPage(
-              duration: duration,
-              position: positionPageRight,
-              child: MemoCard(
-                title: "タスクリスト${page + 1}",
-              ),
-            ),
+            if (page < list.length - 1) ...[
+              SwiperPage(
+                duration: duration,
+                position: positionPageRight,
+                child: MemoCard(
+                  title: list[page + 1].name,
+                ),
+              )
+            ],
           ],
         ));
   }

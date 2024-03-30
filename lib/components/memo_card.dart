@@ -46,7 +46,7 @@ class MemoCard extends HookConsumerWidget {
           },
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
-            child: MemoLayout(),
+            child: MemoLayout(title: title),
           ),
         ),
         LoadingCircle(
@@ -58,7 +58,8 @@ class MemoCard extends HookConsumerWidget {
 }
 
 class MemoLayout extends StatelessWidget {
-  const MemoLayout({super.key});
+  final String title;
+  const MemoLayout({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +73,7 @@ class MemoLayout extends StatelessWidget {
             child: Column(
               children: [
                 TitleBlock(
-                  text: "タスクリスト",
+                  text: title,
                 ),
                 ListBlock(isCompleted: false, text: "アプリ作る"),
                 ListBlock(isCompleted: false, text: "chatGTP"),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:memo_app_flutter/components/add_task_modal.dart';
 import 'package:memo_app_flutter/components/bottom_modal.dart';
 import 'package:memo_app_flutter/components/menu.dart';
@@ -13,6 +14,7 @@ import 'package:memo_app_flutter/components/top_bar.dart';
 import 'package:memo_app_flutter/components/memo_card.dart';
 import 'package:memo_app_flutter/components/swiper.dart';
 import 'package:memo_app_flutter/components/top_modal.dart';
+import 'package:memo_app_flutter/data/api.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/ui/atoms/skeleton_container.dart';
 import 'package:memo_app_flutter/utils/style.dart';
@@ -29,6 +31,15 @@ class HomeView extends HookConsumerWidget {
     final isBottomModalOpen = ref.watch(isBottomModalOpenProvider);
 
     final isLoading = ref.watch(isLoadingProvider);
+
+    useEffect(() {
+      fetchPost().then((data) {
+        ref.read(memoListProvider.notifier).state = data;
+      }).catchError((error) {
+        // エラーハンドリング
+        print("Error fetching data: $error");
+      });
+    }, []);
 
     return Scaffold(
       key: _scaffoldKey,
