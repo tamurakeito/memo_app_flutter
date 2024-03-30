@@ -15,3 +15,5 @@ final memoListProvider = StateProvider<List<MemoSummaryType>>(
 );
 
 final memoPageProvider = StateProvider<int>((ref) => 0);
+
+final isLoadingProvider = StateProvider<bool>((ref) => false);

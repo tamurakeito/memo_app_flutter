@@ -28,7 +28,7 @@ class HomeView extends HookConsumerWidget {
     final isTopModalOpen = ref.watch(isTopModalOpenProvider);
     final isBottomModalOpen = ref.watch(isBottomModalOpenProvider);
 
-    final isLoading = useState<bool>(false);
+    final isLoading = ref.watch(isLoadingProvider);
 
     return Scaffold(
       key: _scaffoldKey,
@@ -52,7 +52,7 @@ class HomeView extends HookConsumerWidget {
               decoration: BoxDecoration(color: kWhite),
               child: SafeArea(
                 child: Column(
-                    children: !isLoading.value
+                    children: !isLoading
                         ? [
                             TopBar(scaffoldKey: _scaffoldKey),
                             Swiper(),

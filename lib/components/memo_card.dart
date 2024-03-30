@@ -1,15 +1,64 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
+import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
-class MemoCard extends StatelessWidget {
+class MemoCard extends HookConsumerWidget {
   final String title;
   const MemoCard({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoadable = useState<bool>(false);
+    final isSyncActive = useState<bool>(false);
+    // final isLoading = ref.watch(isLoadingProvider);
+
+    return Stack(
+      children: [
+        NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification.metrics.pixels < -100 &&
+                isLoadable.value == false) {
+              isLoadable.value = true;
+              isSyncActive.value = true;
+            } else if (notification.metrics.pixels > -55 &&
+                isLoadable.value == true) {
+              isSyncActive.value = false;
+            }
+            if (notification is ScrollEndNotification &&
+                isLoadable.value == true) {
+              ref.read(isLoadingProvider.notifier).state = true;
+              isLoadable.value = false;
+            }
+            return false;
+          },
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: MemoLayout(),
+          ),
+        ),
+        LoadingCircle(
+          isActive: isSyncActive.value,
+        ),
+      ],
+    );
+  }
+}
+
+class MemoLayout extends StatelessWidget {
+  const MemoLayout({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,20 +66,40 @@ class MemoCard extends StatelessWidget {
       children: [
         // 未完了リスト
         Container(
-          padding: const EdgeInsets.only(bottom: 12),
-          decoration:
-              const BoxDecoration(border: Border(bottom: AtomicBorder())),
-          child: Column(
-            children: [
-              TitleBlock(
-                text: title,
-              ),
-              ListBlock(isCompleted: false, text: "アプリ作る"),
-              ListBlock(isCompleted: false, text: "chatGTP"),
-              ListBlock(isCompleted: false, text: "服買う"),
-            ],
-          ),
-        ),
+            padding: const EdgeInsets.only(bottom: 12),
+            decoration:
+                const BoxDecoration(border: Border(bottom: AtomicBorder())),
+            child: Column(
+              children: [
+                TitleBlock(
+                  text: "タスクリスト",
+                ),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+                ListBlock(isCompleted: false, text: "アプリ作る"),
+                ListBlock(isCompleted: false, text: "chatGTP"),
+                ListBlock(isCompleted: false, text: "服買う"),
+              ],
+            )),
         // 完了済リスト
         Column(
           children: [

@@ -70,30 +70,6 @@ class BottomModal extends HookConsumerWidget {
     final movePosition = useState<double>(0);
     final isDuration = useState<bool>(false);
 
-    final chevronsOffsetController =
-        useAnimationController(duration: const Duration(milliseconds: 1200))
-          ..repeat(reverse: false);
-
-    final chevronsOffsetAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.1),
-      end: const Offset(0, -0.1),
-    ).animate(CurvedAnimation(
-      parent: chevronsOffsetController,
-      curve: Curves.easeInOut,
-    ));
-
-    final chevronsOpacityController =
-        useAnimationController(duration: const Duration(milliseconds: 600))
-          ..repeat(reverse: true);
-
-    final chevronsOpacityAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(CurvedAnimation(
-      parent: chevronsOpacityController,
-      curve: Curves.easeInOut,
-    ));
-
     bool isModalDefault = true;
     bool isModalUp = false;
     bool isModalDown = false;
