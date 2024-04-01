@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/providers/providers.dart';
+import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
-class Navigation extends StatelessWidget {
+class Navigation extends ConsumerWidget {
   const Navigation({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final List<MemoSummaryType> list = ref.watch(memoListProvider);
+    final int page = ref.watch(memoPageProvider);
     return Drawer(
       child: Container(
         color: kWhite,
@@ -21,45 +26,40 @@ class Navigation extends StatelessWidget {
               decoration:
                   const BoxDecoration(border: Border(bottom: AtomicBorder())),
             ),
-            const MemoListBox(
+            MemoListBox(
               isTagged: true,
-              memoList: [
-                MemoListBlock(
-                  text: "タスクリスト",
-                  length: 12,
-                  isFocused: false,
-                ),
-                MemoListBlock(
-                  text: "タスクリスト",
-                  length: 12,
-                  isFocused: true,
-                ),
-                MemoListBlock(
-                  text: "タスクリスト",
-                  length: 12,
-                  isFocused: false,
-                ),
-              ],
+              memoList: list
+                  .where((element) => element.tag)
+                  .toList()
+                  .asMap()
+                  .entries
+                  .map((entry) {
+                int index = entry.key;
+                MemoSummaryType memo = entry.value;
+                return MemoListBlock(
+                  text: memo.name,
+                  length: memo.length,
+                  isFocused: page == index,
+                );
+              }).toList(),
             ),
-            const MemoListBox(
+            MemoListBox(
               isTagged: false,
-              memoList: [
-                MemoListBlock(
-                  text: "タスクリスト",
-                  length: 12,
-                  isFocused: false,
-                ),
-                MemoListBlock(
-                  text: "タスクリスト",
-                  length: 12,
-                  isFocused: false,
-                ),
-                MemoListBlock(
-                  text: "タスクリスト",
-                  length: 12,
-                  isFocused: false,
-                ),
-              ],
+              memoList: list
+                  .where((memo) => !memo.tag)
+                  .toList()
+                  .asMap()
+                  .entries
+                  .map((entry) {
+                int index = entry.key;
+                MemoSummaryType memo = entry.value;
+                return MemoListBlock(
+                  text: memo.name,
+                  length: memo.length,
+                  isFocused: page ==
+                      index + list.where((element) => element.tag).length,
+                );
+              }).toList(),
             )
           ],
         ),

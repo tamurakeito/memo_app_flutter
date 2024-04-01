@@ -18,7 +18,11 @@ class Swiper extends HookConsumerWidget {
     final int durationTime = 200;
 
     final int page = ref.watch(memoPageProvider);
-    final List<MemoSummaryType> list = ref.watch(memoListProvider);
+    final List<MemoSummaryType> rawdataList = ref.watch(memoListProvider);
+    final List<MemoSummaryType> list = [
+      ...rawdataList.where((element) => element.tag),
+      ...rawdataList.where((element) => !element.tag),
+    ];
 
     final positionPageLeft = useState<double>(-1 * screenWidth);
     final positionPageCenter = useState<double>(0);
