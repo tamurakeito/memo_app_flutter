@@ -14,9 +14,6 @@ class Swiper extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final int durationTime = 200;
-
     final int page = ref.watch(memoPageProvider);
     final List<MemoSummaryType> rawdataList = ref.watch(memoListProvider);
     final List<MemoSummaryType> list = [
@@ -24,93 +21,80 @@ class Swiper extends HookConsumerWidget {
       ...rawdataList.where((element) => !element.tag),
     ];
 
-    final positionPageLeft = useState<double>(-1 * screenWidth);
-    final positionPageCenter = useState<double>(0);
-    final positionPageRight = useState<double>(screenWidth);
-
     final isSwipeFlag = useState<bool>(false);
-    final isDuration = useState<bool>(false);
-
-    final Duration duration =
-        Duration(milliseconds: isDuration.value ? durationTime : 0);
 
     return GestureDetector(
         onHorizontalDragStart: (details) {
           isSwipeFlag.value = true;
-          isDuration.value = true;
         },
         onHorizontalDragUpdate: (details) {
           if (isSwipeFlag.value == true) {
             isSwipeFlag.value = false;
             if (details.delta.dx > 0 && page > 0) {
-              positionPageCenter.value = screenWidth;
-              positionPageLeft.value = 0;
-              Timer(Duration(milliseconds: durationTime), () {
-                ref.read(memoPageProvider.notifier).state = page - 1;
-                positionPageCenter.value = 0;
-                positionPageLeft.value = -1 * screenWidth;
-                isDuration.value = false;
-              });
+              ref.read(memoPageProvider.notifier).state = page - 1;
             } else if (details.delta.dx < 0 && page + 1 < list.length) {
-              positionPageCenter.value = -1 * screenWidth;
-              positionPageRight.value = 0;
-              Timer(Duration(milliseconds: durationTime), () {
-                ref.read(memoPageProvider.notifier).state = page + 1;
-                positionPageCenter.value = 0;
-                positionPageRight.value = screenWidth;
-                isDuration.value = false;
-              });
+              ref.read(memoPageProvider.notifier).state = page + 1;
             }
           }
         },
         onHorizontalDragEnd: (details) {},
         child: Stack(
-          children: [
-            // ここは改善の余地大きそう...
-            if (page > 0)
+          children: list.asMap().entries.expand<Widget>((entry) {
+            int index = entry.key;
+            MemoSummaryType memo = entry.value;
+            return [
               SwiperPage(
-                duration: duration,
-                position: positionPageLeft,
+                index: index,
+                isActive: false,
                 child: MemoCard(
-                  id: list[page - 1].id,
+                  id: memo.id,
                 ),
-              ),
-            SwiperPage(
-              duration: duration,
-              position: positionPageCenter,
-              child: MemoCard(
-                id: list[page].id,
-              ),
-            ),
-            if (page < list.length - 1)
-              SwiperPage(
-                duration: duration,
-                position: positionPageRight,
-                child: MemoCard(
-                  id: list[page + 1].id,
-                ),
-              ),
-          ],
+              )
+            ];
+          }).toList(),
         ));
   }
 }
 
 class SwiperPage extends HookConsumerWidget {
-  final Duration duration;
-  final ValueNotifier<double> position;
+  final int index;
+  // final Duration duration;
+  final bool isActive;
   final Widget child;
   SwiperPage(
       {super.key,
-      required this.duration,
-      required this.position,
+      required this.index,
+      // required this.duration,
+      required this.isActive,
       required this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double screenHeight = MediaQuery.of(context).size.height;
+    const int durationTime = 200;
+    final Duration duration = Duration(milliseconds: durationTime);
 
     final page = ref.watch(memoPageProvider);
+
+    final position = useState<double>(0);
+    if (index < page) {
+      position.value = -1 * screenWidth;
+    } else if (index == page) {
+      position.value = 0;
+    } else if (index > page) {
+      position.value = screenWidth;
+    }
+
+    useEffect(() {
+      if (index == page - 1) {
+        position.value = -1 * screenWidth;
+      } else if (index == page) {
+        position.value = 0;
+      } else if (index == page + 1) {
+        position.value = screenWidth;
+      }
+    }, [page]);
 
     return AnimatedContainer(
       duration: duration,
@@ -118,7 +102,9 @@ class SwiperPage extends HookConsumerWidget {
       transform: Matrix4.translationValues(position.value, 0, 0),
       color: kWhite,
       height: screenHeight - 160,
-      child: child,
+      child: (index == page - 1 || index == page || index == page + 1)
+          ? child
+          : SizedBox.shrink(),
     );
   }
 }
