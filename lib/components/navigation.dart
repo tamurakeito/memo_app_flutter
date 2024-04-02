@@ -40,6 +40,7 @@ class Navigation extends ConsumerWidget {
                   text: memo.name,
                   length: memo.length,
                   isFocused: page == index,
+                  jumpPage: index,
                 );
               }).toList(),
             ),
@@ -51,13 +52,14 @@ class Navigation extends ConsumerWidget {
                   .asMap()
                   .entries
                   .map((entry) {
-                int index = entry.key;
+                int index =
+                    entry.key + list.where((element) => element.tag).length;
                 MemoSummaryType memo = entry.value;
                 return MemoListBlock(
                   text: memo.name,
                   length: memo.length,
-                  isFocused: page ==
-                      index + list.where((element) => element.tag).length,
+                  isFocused: page == index,
+                  jumpPage: index,
                 );
               }).toList(),
             )
@@ -105,33 +107,42 @@ class MemoListBox extends StatelessWidget {
   }
 }
 
-class MemoListBlock extends StatelessWidget {
+class MemoListBlock extends ConsumerWidget {
   final String text;
   final int length;
   final bool isFocused;
-  const MemoListBlock(
-      {super.key,
-      required this.text,
-      required this.length,
-      required this.isFocused});
+  final int jumpPage;
+  const MemoListBlock({
+    super.key,
+    required this.text,
+    required this.length,
+    required this.isFocused,
+    required this.jumpPage,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: isFocused ? kGray200 : kWhite,
-      padding: const EdgeInsets.fromLTRB(23, 10, 23, 10),
-      child: Row(children: [
-        const AtomicCircle(
-          type: AtomicCircleType.gray,
-          radius: 6,
-        ),
-        const SizedBox(
-          width: 16,
-        ),
-        AtomicText(text, style: AtomicTextStyle.h5, type: AtomicTextColor.dark),
-        const Spacer(),
-        AtomicText(length.toString(), style: AtomicTextStyle.sm)
-      ]),
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Button(
+        onPressed: () {
+          Navigator.pop(context);
+          ref.read(memoPageProvider.notifier).state = jumpPage;
+        },
+        child: Container(
+          color: isFocused ? kGray200 : kWhite,
+          padding: const EdgeInsets.fromLTRB(23, 10, 23, 10),
+          child: Row(children: [
+            const AtomicCircle(
+              type: AtomicCircleType.gray,
+              radius: 6,
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            AtomicText(text,
+                style: AtomicTextStyle.h5, type: AtomicTextColor.dark),
+            const Spacer(),
+            AtomicText(length.toString(), style: AtomicTextStyle.sm)
+          ]),
+        ));
   }
 }

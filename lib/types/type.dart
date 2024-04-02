@@ -39,6 +39,19 @@ class MemoDetailType extends MemoType {
     required bool tag,
     required this.tasks,
   }) : super(id: id, name: name, tag: tag);
+
+  factory MemoDetailType.fromJson(Map<String, dynamic> json) {
+    var tasksFromJson = json['tasks'] != null ? json['tasks'] as List : [];
+    // JSONの各要素からTaskTypeのインスタンスリストを生成
+    List<TaskType> taskList =
+        tasksFromJson.map((taskJson) => TaskType.fromJson(taskJson)).toList();
+    return MemoDetailType(
+      id: json['id'],
+      name: json['name'],
+      tag: json['tag'],
+      tasks: taskList,
+    );
+  }
 }
 
 class TaskType {
@@ -53,4 +66,13 @@ class TaskType {
     required this.memoId,
     required this.complete,
   });
+
+  factory TaskType.fromJson(Map<String, dynamic> json) {
+    return TaskType(
+      id: json['id'],
+      name: json['name'],
+      memoId: json['memo_id'],
+      complete: json['complete'],
+    );
+  }
 }

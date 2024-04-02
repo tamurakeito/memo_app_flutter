@@ -8,7 +8,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
+import 'package:memo_app_flutter/data/get_memo_detail.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
+import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
@@ -16,14 +18,26 @@ import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class MemoCard extends HookConsumerWidget {
-  final String title;
-  const MemoCard({super.key, required this.title});
+  final int id;
+  const MemoCard({super.key, required this.id});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoadable = useState<bool>(false);
     final isSyncActive = useState<bool>(false);
     // final isLoading = ref.watch(isLoadingProvider);
+
+    final memo = useState<MemoDetailType>(
+        MemoDetailType(id: 0, name: '', tag: false, tasks: []));
+
+    useEffect(() {
+      getMemoDetail(id).then((data) {
+        memo.value = data;
+      }).catchError((error) {
+        // エラーハンドリング
+        print("Error fetching data: $error");
+      });
+    }, [id]);
 
     return Stack(
       children: [
@@ -46,7 +60,8 @@ class MemoCard extends HookConsumerWidget {
           },
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
-            child: MemoLayout(title: title),
+            child: MemoLayout(memo: memo.value),
+            // child: Text(memo.value.name),
           ),
         ),
         LoadingCircle(
@@ -58,8 +73,8 @@ class MemoCard extends HookConsumerWidget {
 }
 
 class MemoLayout extends StatelessWidget {
-  final String title;
-  const MemoLayout({super.key, required this.title});
+  final MemoDetailType memo;
+  const MemoLayout({super.key, required this.memo});
 
   @override
   Widget build(BuildContext context) {
@@ -73,32 +88,13 @@ class MemoLayout extends StatelessWidget {
             child: Column(
               children: [
                 TitleBlock(
-                  text: title,
+                  text: memo.name,
                 ),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
-                ListBlock(isCompleted: false, text: "アプリ作る"),
-                ListBlock(isCompleted: false, text: "chatGTP"),
-                ListBlock(isCompleted: false, text: "服買う"),
+                ...memo.tasks
+                    .where((element) => !element.complete)
+                    .map((task) =>
+                        ListBlock(isCompleted: false, text: task.name))
+                    .toList()
               ],
             )),
         // 完了済リスト
@@ -129,9 +125,10 @@ class MemoLayout extends StatelessWidget {
                 ],
               ),
             ),
-            const ListBlock(isCompleted: true, text: "アプリ作る"),
-            const ListBlock(isCompleted: true, text: "chatGTP"),
-            const ListBlock(isCompleted: true, text: "服買う"),
+            ...memo.tasks
+                .where((element) => element.complete)
+                .map((task) => ListBlock(isCompleted: true, text: task.name))
+                .toList()
           ],
         ),
       ],

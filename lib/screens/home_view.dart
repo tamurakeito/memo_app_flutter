@@ -14,7 +14,7 @@ import 'package:memo_app_flutter/components/top_bar.dart';
 import 'package:memo_app_flutter/components/memo_card.dart';
 import 'package:memo_app_flutter/components/swiper.dart';
 import 'package:memo_app_flutter/components/top_modal.dart';
-import 'package:memo_app_flutter/data/api.dart';
+import 'package:memo_app_flutter/data/get_memo_summary.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/ui/atoms/skeleton_container.dart';
 import 'package:memo_app_flutter/utils/style.dart';
@@ -33,7 +33,7 @@ class HomeView extends HookConsumerWidget {
     final isLoading = ref.watch(isLoadingProvider);
 
     useEffect(() {
-      fetchPost().then((data) {
+      getMemoSummary().then((data) {
         ref.read(memoListProvider.notifier).state = data;
       }).catchError((error) {
         // エラーハンドリング
