@@ -47,6 +47,7 @@ class Swiper extends HookConsumerWidget {
                 index: index,
                 isActive: false,
                 child: MemoCard(
+                  index: index,
                   id: memo.id,
                 ),
               )
@@ -102,9 +103,7 @@ class SwiperPage extends HookConsumerWidget {
       transform: Matrix4.translationValues(position.value, 0, 0),
       color: kWhite,
       height: screenHeight - 160,
-      child: (index == page - 1 || index == page || index == page + 1)
-          ? child
-          : SizedBox.shrink(),
+      child: child,
     );
   }
 }

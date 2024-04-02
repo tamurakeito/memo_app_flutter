@@ -18,26 +18,45 @@ import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class MemoCard extends HookConsumerWidget {
+  final int index;
   final int id;
-  const MemoCard({super.key, required this.id});
+  const MemoCard({
+    super.key,
+    required this.index,
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final int page = ref.watch(memoPageProvider);
     final isLoadable = useState<bool>(false);
     final isSyncActive = useState<bool>(false);
-    // final isLoading = ref.watch(isLoadingProvider);
+    final isLoading = useState<bool>(false);
+    final isLoaded = useState<bool>(false);
+    final double screenHeight = MediaQuery.of(context).size.height;
 
     final memo = useState<MemoDetailType>(
         MemoDetailType(id: 0, name: '', tag: false, tasks: []));
 
-    useEffect(() {
+    void fetch() {
+      isLoading.value = true;
       getMemoDetail(id).then((data) {
         memo.value = data;
       }).catchError((error) {
         // エラーハンドリング
         print("Error fetching data: $error");
+      }).whenComplete(() {
+        isLoading.value = false;
+        isLoaded.value = true;
       });
-    }, [id]);
+    }
+
+    useEffect(() {
+      if ((index == page - 1 || index == page || index == page + 1) &&
+          !isLoaded.value) {
+        fetch();
+      }
+    }, [page]);
 
     return Stack(
       children: [
@@ -53,15 +72,19 @@ class MemoCard extends HookConsumerWidget {
             }
             if (notification is ScrollEndNotification &&
                 isLoadable.value == true) {
-              ref.read(isLoadingProvider.notifier).state = true;
+              fetch();
               isLoadable.value = false;
             }
             return false;
           },
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
-            child: MemoLayout(memo: memo.value),
-            // child: Text(memo.value.name),
+            child: Container(
+              constraints: BoxConstraints(minHeight: screenHeight - 160),
+              child: !isLoading.value
+                  ? MemoLayout(memo: memo.value)
+                  : SkeletonMemoCard(),
+            ),
           ),
         ),
         LoadingCircle(
