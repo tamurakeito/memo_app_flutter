@@ -101,59 +101,61 @@ class MemoLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final uncompleteList = memo.tasks
+        .where((element) => !element.complete)
+        .map((task) => ListBlock(isCompleted: false, text: task.name))
+        .toList();
+    final completeList = memo.tasks
+        .where((element) => element.complete)
+        .map((task) => ListBlock(isCompleted: true, text: task.name))
+        .toList();
     return Column(
       children: [
         // 未完了リスト
         Container(
             padding: const EdgeInsets.only(bottom: 12),
-            decoration:
-                const BoxDecoration(border: Border(bottom: AtomicBorder())),
             child: Column(
               children: [
                 TitleBlock(
                   text: memo.name,
                 ),
-                ...memo.tasks
-                    .where((element) => !element.complete)
-                    .map((task) =>
-                        ListBlock(isCompleted: false, text: task.name))
-                    .toList()
+                ...uncompleteList
               ],
             )),
         // 完了済リスト
-        Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 12, 18, 12),
-              child: Row(
-                children: [
-                  const AtomicText(
-                    "完了",
-                    style: AtomicTextStyle.md,
-                    type: AtomicTextColor.light,
-                  ),
-                  const Spacer(),
-                  Button(
-                      onPressed: () {
-                        //
-                      },
-                      child: Transform.rotate(
-                        angle: pi / 2,
-                        child: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 18,
-                          color: kGray500,
-                        ),
-                      ))
-                ],
+        if (completeList.isNotEmpty)
+          Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 12, 18, 12),
+                decoration:
+                    const BoxDecoration(border: Border(top: AtomicBorder())),
+                child: Row(
+                  children: [
+                    const AtomicText(
+                      "完了",
+                      style: AtomicTextStyle.md,
+                      type: AtomicTextColor.light,
+                    ),
+                    const Spacer(),
+                    Button(
+                        onPressed: () {
+                          //
+                        },
+                        child: Transform.rotate(
+                          angle: pi / 2,
+                          child: const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 18,
+                            color: kGray500,
+                          ),
+                        ))
+                  ],
+                ),
               ),
-            ),
-            ...memo.tasks
-                .where((element) => element.complete)
-                .map((task) => ListBlock(isCompleted: true, text: task.name))
-                .toList()
-          ],
-        ),
+              ...completeList
+            ],
+          ),
       ],
     );
   }
