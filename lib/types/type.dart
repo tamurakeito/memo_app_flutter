@@ -76,3 +76,15 @@ class TaskType {
     );
   }
 }
+
+class ClientData {
+  final int tab;
+  ClientData({
+    required this.tab,
+  });
+  factory ClientData.fromJson(Map<String, dynamic> json) {
+    return ClientData(
+      tab: json['tab'],
+    );
+  }
+}

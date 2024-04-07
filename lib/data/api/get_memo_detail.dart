@@ -1,11 +1,11 @@
 import 'package:http/http.dart' as http;
+import 'package:memo_app_flutter/data/http.dart';
 import 'dart:convert';
 
 import 'package:memo_app_flutter/types/type.dart';
 
 Future<MemoDetailType> getMemoDetail(int id) async {
-  final response =
-      await http.get(Uri.parse('http://35.233.218.140/memo-detail/$id'));
+  final response = await clientRequest('/memo-detail/$id');
 
   if (response.statusCode == 200) {
     dynamic jsonData = json.decode(response.body);

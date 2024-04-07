@@ -8,7 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
-import 'package:memo_app_flutter/data/get_memo_detail.dart';
+import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';

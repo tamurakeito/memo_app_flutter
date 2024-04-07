@@ -1,11 +1,11 @@
 import 'package:http/http.dart' as http;
+import 'package:memo_app_flutter/data/http.dart';
 import 'dart:convert';
 
 import 'package:memo_app_flutter/types/type.dart';
 
 Future<List<MemoSummaryType>> getMemoSummary() async {
-  final response =
-      await http.get(Uri.parse('http://35.233.218.140/memo-summary'));
+  final response = await clientRequest('/memo-summary');
 
   if (response.statusCode == 200) {
     List<dynamic> jsonData = json.decode(response.body);
