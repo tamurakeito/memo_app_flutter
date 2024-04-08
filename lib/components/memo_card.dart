@@ -43,7 +43,6 @@ class MemoCard extends HookConsumerWidget {
       getMemoDetail(id).then((data) {
         memo.value = data;
       }).catchError((error) {
-        // エラーハンドリング
         print("Error fetching data: $error");
       }).whenComplete(() {
         isLoading.value = false;
@@ -56,6 +55,7 @@ class MemoCard extends HookConsumerWidget {
           !isLoaded.value) {
         fetch();
       }
+      return () {};
     }, [page]);
 
     return Stack(

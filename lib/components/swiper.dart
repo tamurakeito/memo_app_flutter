@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:memo_app_flutter/components/memo_card.dart';
+import 'package:memo_app_flutter/data/api/put_client_data.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/utils/style.dart';
@@ -23,6 +24,20 @@ class Swiper extends HookConsumerWidget {
 
     final isSwipeFlag = useState<bool>(false);
 
+    // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
+    useEffect(() {
+      int turnedPage = page;
+      Timer(Duration(milliseconds: 1000), () {
+        int currentPage = ref.watch(memoPageProvider);
+        if (turnedPage == currentPage) {
+          putClientData(ClientData(tab: currentPage)).catchError((error) {
+            print("Error fetching data: $error");
+          });
+        }
+      });
+      return () {};
+    }, [page]);
+
     return GestureDetector(
         onHorizontalDragStart: (details) {
           isSwipeFlag.value = true;
@@ -36,6 +51,8 @@ class Swiper extends HookConsumerWidget {
               ref.read(memoPageProvider.notifier).state = page + 1;
             }
           }
+
+          // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
         },
         onHorizontalDragEnd: (details) {},
         child: Stack(
