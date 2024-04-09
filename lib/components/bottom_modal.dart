@@ -118,75 +118,77 @@ class BottomModal extends HookConsumerWidget {
                   children: [
                     const Spacer(),
                     SlideTransition(
-                        position: animation,
-                        child: GestureDetector(
-                          onPanStart: (details) {
-                            startPosition.value = details.globalPosition.dy;
-                          },
-                          onPanUpdate: (details) => {
-                            movePosition.value =
-                                details.globalPosition.dy - startPosition.value,
-                            if (movePosition.value <
-                                -screenHeight + modalHeight + 160)
-                              {
-                                handleSubmit(),
-                              }
-                            else if (movePosition.value > modalHeight - 120)
-                              {
-                                handleCancel(),
-                              },
-                          },
-                          onPanEnd: (details) => {
-                            if (movePosition.value <
-                                -1 / 2 * screenHeight + modalHeight)
-                              {
-                                handleSubmit(),
-                              }
-                            else if (movePosition.value > 50)
-                              {
-                                handleCancel(),
-                              }
-                            else
-                              {
-                                isDuration.value = true,
-                                movePosition.value = 0,
-                                Timer(Duration(milliseconds: duration), () {
-                                  isDuration.value = false;
-                                })
-                              },
-                          },
-                          child: AnimatedContainer(
-                              duration: Duration(
-                                  milliseconds:
-                                      isDuration.value ? duration : 1),
-                              alignment: Alignment.bottomCenter,
-                              height: modalHeight +
-                                  bottomPadding -
-                                  movePosition.value,
-                              decoration: BoxDecoration(
-                                  color: kWhite,
-                                  borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.only(top: 50),
-                              // child: const DefaultView(),
-                              // child: UpView(),
-                              // child: DownView(),
-                              child: Stack(
-                                children: [
-                                  ModalContent(
-                                    view: DefaultView(),
-                                    isActive: isModalDefault,
-                                  ),
-                                  ModalContent(
-                                    view: UpView(),
-                                    isActive: isModalUp,
-                                  ),
-                                  ModalContent(
-                                    view: DownView(),
-                                    isActive: isModalDown,
-                                  ),
-                                ],
-                              )),
-                        ))
+                      position: animation,
+                      child: GestureDetector(
+                        onPanStart: (details) {
+                          startPosition.value = details.globalPosition.dy;
+                        },
+                        onPanUpdate: (details) => {
+                          movePosition.value =
+                              details.globalPosition.dy - startPosition.value,
+                          if (movePosition.value <
+                              -screenHeight + modalHeight + 160)
+                            {
+                              handleSubmit(),
+                            }
+                          else if (movePosition.value > modalHeight - 120)
+                            {
+                              handleCancel(),
+                            },
+                        },
+                        onPanEnd: (details) => {
+                          if (movePosition.value <
+                              -1 / 2 * screenHeight + modalHeight)
+                            {
+                              handleSubmit(),
+                            }
+                          else if (movePosition.value > 50)
+                            {
+                              handleCancel(),
+                            }
+                          else
+                            {
+                              isDuration.value = true,
+                              movePosition.value = 0,
+                              Timer(Duration(milliseconds: duration), () {
+                                isDuration.value = false;
+                              })
+                            },
+                        },
+                        child: AnimatedContainer(
+                          duration: Duration(
+                            milliseconds: isDuration.value ? duration : 1,
+                          ),
+                          alignment: Alignment.bottomCenter,
+                          height:
+                              modalHeight + bottomPadding - movePosition.value,
+                          decoration: BoxDecoration(
+                            color: kWhite,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.only(top: 50),
+                          // child: const DefaultView(),
+                          // child: UpView(),
+                          // child: DownView(),
+                          child: Stack(
+                            children: [
+                              ModalContent(
+                                view: DefaultView(),
+                                isActive: isModalDefault,
+                              ),
+                              ModalContent(
+                                view: UpView(),
+                                isActive: isModalUp,
+                              ),
+                              ModalContent(
+                                view: DownView(),
+                                isActive: isModalDown,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 )
               ],

@@ -95,7 +95,7 @@ class MemoCard extends HookConsumerWidget {
   }
 }
 
-class MemoLayout extends StatelessWidget {
+class MemoLayout extends HookWidget {
   final MemoDetailType memo;
   const MemoLayout({super.key, required this.memo});
 
@@ -109,6 +109,20 @@ class MemoLayout extends StatelessWidget {
         .where((element) => element.complete)
         .map((task) => ListBlock(isCompleted: true, text: task.name))
         .toList();
+
+    final isOpenCompletedList = useState<bool>(true);
+    const isOpenDuration = Duration(milliseconds: 120);
+
+    final controller = useAnimationController(duration: isOpenDuration);
+
+    final animation = Tween<Offset>(
+      begin: const Offset(0, 0), // 画面上部から開始
+      end: const Offset(0, -1 / 3), // 画面の中心に終了
+    ).animate(CurvedAnimation(
+      parent: controller,
+      curve: Curves.easeInOut,
+    ));
+
     return Column(
       children: [
         // 未完了リスト
@@ -128,8 +142,9 @@ class MemoLayout extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.fromLTRB(16, 12, 18, 12),
-                decoration:
-                    const BoxDecoration(border: Border(top: AtomicBorder())),
+                decoration: const BoxDecoration(
+                  border: Border(top: AtomicBorder()),
+                ),
                 child: Row(
                   children: [
                     const AtomicText(
@@ -139,9 +154,20 @@ class MemoLayout extends StatelessWidget {
                     ),
                     const Spacer(),
                     Button(
-                        onPressed: () {
-                          //
-                        },
+                      onPressed: () {
+                        if (isOpenCompletedList.value) {
+                          controller.forward();
+                          isOpenCompletedList.value = false;
+                        } else {
+                          controller.reverse();
+                          isOpenCompletedList.value = true;
+                        }
+                      },
+                      child: AnimatedContainer(
+                        duration: isOpenDuration,
+                        transform: Matrix4.rotationX(
+                            isOpenCompletedList.value ? 0 : pi), // 回転アニメーション
+                        transformAlignment: Alignment.center,
                         child: Transform.rotate(
                           angle: pi / 2,
                           child: const Icon(
@@ -149,11 +175,23 @@ class MemoLayout extends StatelessWidget {
                             size: 18,
                             color: kGray500,
                           ),
-                        ))
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              ...completeList
+              AnimatedOpacity(
+                opacity: isOpenCompletedList.value ? 1 : 0,
+                duration: isOpenDuration,
+                curve: Curves.easeInOut,
+                child: SlideTransition(
+                  position: animation,
+                  child: Column(
+                    children: completeList,
+                  ),
+                ),
+              ),
             ],
           ),
       ],
