@@ -43,7 +43,6 @@ class TopBar extends HookConsumerWidget {
         ref.read(memoListProvider.notifier).state = sortedList;
 
         int index = sortedList.indexWhere((element) => element.id == memo!.id);
-        print("$page->$index");
         ref.read(memoPageProvider.notifier).state = index;
       } catch (error) {
         print("Error fetching data: $error");
@@ -106,32 +105,3 @@ class TopBarIconButton extends StatelessWidget {
     );
   }
 }
-
-// enum TopBarIconButtonType = {  }
-
-// class TopBar extends AppBar {
-//   TopBar({super.key})
-//       : super(
-//             leading: IconButton(
-//               icon: const Icon(Icons.menu),
-//               onPressed: () {
-//                 // navigation open
-//               },
-//             ),
-//             actions: <Widget>[
-//               IconButton(
-//                 icon: const Icon(Icons.bookmark),
-//                 onPressed: () {
-//                   // お気に入りアクション
-//                 },
-//               ),
-//               IconButton(
-//                 icon: const Icon(Icons.more_vert),
-//                 onPressed: () {
-//                   // menu open
-//                 },
-//               ),
-//             ],
-//   // toolbarHeight: 100;
-//   ;
-// }

@@ -62,7 +62,13 @@ class MemoCard extends HookConsumerWidget {
     }, [page]);
 
     useEffect(() {
-      isLoaded.value = false;
+      if (page == index) {
+        fetch();
+        isLoaded.value = true;
+      } else {
+        isLoaded.value = false;
+      }
+      return () {};
     }, [list]);
 
     return Stack(
@@ -88,7 +94,7 @@ class MemoCard extends HookConsumerWidget {
             physics: AlwaysScrollableScrollPhysics(),
             child: Container(
               constraints: BoxConstraints(minHeight: screenHeight - 160),
-              child: !isLoading.value && memo.value != nullMemo
+              child: !isLoading.value && memo.value.name != nullMemo.name
                   ? MemoLayout(memo: memo.value)
                   : SkeletonMemoCard(),
             ),
