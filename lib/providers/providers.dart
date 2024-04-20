@@ -5,6 +5,8 @@ final isMenuOpenProvider = StateProvider<bool>((ref) => false);
 final isTopModalOpenProvider = StateProvider<bool>((ref) => false);
 final isBottomModalOpenProvider = StateProvider<bool>((ref) => false);
 
+final memoProvider = StateProvider<MemoSummaryType?>((ref) => null);
+
 final memoListProvider = StateProvider<List<MemoSummaryType>>(
   (ref) => [
     MemoSummaryType(id: 0, name: "メモA", tag: false, length: 5),

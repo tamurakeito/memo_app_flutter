@@ -34,9 +34,11 @@ class MemoCard extends HookConsumerWidget {
     final isLoading = useState<bool>(false);
     final isLoaded = useState<bool>(false);
     final double screenHeight = MediaQuery.of(context).size.height;
+    final List<MemoSummaryType> list = ref.watch(memoListProvider);
 
-    final memo = useState<MemoDetailType>(
-        MemoDetailType(id: 0, name: '', tag: false, tasks: []));
+    final MemoDetailType nullMemo =
+        MemoDetailType(id: 0, name: '', tag: false, tasks: []);
+    final memo = useState<MemoDetailType>(nullMemo);
 
     void fetch() {
       isLoading.value = true;
@@ -51,12 +53,17 @@ class MemoCard extends HookConsumerWidget {
     }
 
     useEffect(() {
+      // ページが捲られたときにローディングする
       if ((index == page - 1 || index == page || index == page + 1) &&
           !isLoaded.value) {
         fetch();
       }
       return () {};
     }, [page]);
+
+    useEffect(() {
+      isLoaded.value = false;
+    }, [list]);
 
     return Stack(
       children: [
@@ -81,7 +88,7 @@ class MemoCard extends HookConsumerWidget {
             physics: AlwaysScrollableScrollPhysics(),
             child: Container(
               constraints: BoxConstraints(minHeight: screenHeight - 160),
-              child: !isLoading.value
+              child: !isLoading.value && memo.value != nullMemo
                   ? MemoLayout(memo: memo.value)
                   : SkeletonMemoCard(),
             ),

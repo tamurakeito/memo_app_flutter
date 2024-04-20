@@ -17,6 +17,7 @@ import 'package:memo_app_flutter/components/top_modal.dart';
 import 'package:memo_app_flutter/data/api/get_client_data.dart';
 import 'package:memo_app_flutter/data/api/get_memo_summary.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
+import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/skeleton_container.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,20 +34,28 @@ class HomeView extends HookConsumerWidget {
 
     final isLoading = ref.watch(isLoadingProvider);
 
-    useEffect(() {
-      getMemoSummary().then((data) {
-        ref.read(memoListProvider.notifier).state = data;
-      }).catchError((error) {
-        // エラーハンドリング
-        print("Error fetching data: $error");
-      });
+    Future<void> fetchAndSetData() async {
+      try {
+        final summaries = await getMemoSummary();
+        final sortedList = [
+          ...summaries.where((element) => element.tag),
+          ...summaries.where((element) => !element.tag),
+        ];
+        ref.read(memoListProvider.notifier).state = sortedList;
 
-      getClientData().then((data) {
-        ref.read(memoPageProvider.notifier).state = data.tab;
-      }).catchError((error) {
-        // エラーハンドリング
+        final clientData = await getClientData();
+        ref.read(memoPageProvider.notifier).state = clientData.tab;
+
+        if (sortedList.isNotEmpty && sortedList.length > clientData.tab) {
+          ref.read(memoProvider.notifier).state = sortedList[clientData.tab];
+        }
+      } catch (error) {
         print("Error fetching data: $error");
-      });
+      }
+    }
+
+    useEffect(() {
+      fetchAndSetData();
     }, []);
 
     return Scaffold(

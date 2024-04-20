@@ -16,16 +16,12 @@ class Swiper extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final int page = ref.watch(memoPageProvider);
-    final List<MemoSummaryType> rawdataList = ref.watch(memoListProvider);
-    final List<MemoSummaryType> list = [
-      ...rawdataList.where((element) => element.tag),
-      ...rawdataList.where((element) => !element.tag),
-    ];
+    final List<MemoSummaryType> list = ref.watch(memoListProvider);
 
     final isSwipeFlag = useState<bool>(false);
 
-    // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
     useEffect(() {
+      // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
       int turnedPage = page;
       Timer(Duration(milliseconds: 1000), () {
         int currentPage = ref.watch(memoPageProvider);
@@ -35,42 +31,46 @@ class Swiper extends HookConsumerWidget {
           });
         }
       });
+      // memoProviderにセット
+      Timer(Duration.zero,
+          () => ref.read(memoProvider.notifier).state = list[page]);
       return () {};
     }, [page]);
 
     return GestureDetector(
-        onHorizontalDragStart: (details) {
-          isSwipeFlag.value = true;
-        },
-        onHorizontalDragUpdate: (details) {
-          if (isSwipeFlag.value == true) {
-            isSwipeFlag.value = false;
-            if (details.delta.dx > 0 && page > 0) {
-              ref.read(memoPageProvider.notifier).state = page - 1;
-            } else if (details.delta.dx < 0 && page + 1 < list.length) {
-              ref.read(memoPageProvider.notifier).state = page + 1;
-            }
+      onHorizontalDragStart: (details) {
+        isSwipeFlag.value = true;
+      },
+      onHorizontalDragUpdate: (details) {
+        if (isSwipeFlag.value == true) {
+          isSwipeFlag.value = false;
+          if (details.delta.dx > 0 && page > 0) {
+            ref.read(memoPageProvider.notifier).state = page - 1;
+          } else if (details.delta.dx < 0 && page + 1 < list.length) {
+            ref.read(memoPageProvider.notifier).state = page + 1;
           }
+        }
 
-          // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
-        },
-        onHorizontalDragEnd: (details) {},
-        child: Stack(
-          children: list.asMap().entries.expand<Widget>((entry) {
-            int index = entry.key;
-            MemoSummaryType memo = entry.value;
-            return [
-              SwiperPage(
+        // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
+      },
+      onHorizontalDragEnd: (details) {},
+      child: Stack(
+        children: list.asMap().entries.expand<Widget>((entry) {
+          int index = entry.key;
+          MemoSummaryType memo = entry.value;
+          return [
+            SwiperPage(
+              index: index,
+              isActive: false,
+              child: MemoCard(
                 index: index,
-                isActive: false,
-                child: MemoCard(
-                  index: index,
-                  id: memo.id,
-                ),
-              )
-            ];
-          }).toList(),
-        ));
+                id: memo.id,
+              ),
+            )
+          ];
+        }).toList(),
+      ),
+    );
   }
 }
 
