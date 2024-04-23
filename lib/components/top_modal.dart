@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/ui/molecules/barrier_scrim.dart';
@@ -12,13 +13,15 @@ class TopModal extends HookConsumerWidget {
   final String placeholder;
   final IconData visualIcon;
   final IconData execIcon;
-  final void Function() onPressedExec;
+  final TextEditingController textController;
+  final Future<void> Function() onPressedExec;
   // final Widget child;
   const TopModal(
       {super.key,
       required this.placeholder,
       required this.visualIcon,
       required this.execIcon,
+      required this.textController,
       required this.onPressedExec});
 
   @override
@@ -66,13 +69,33 @@ class TopModal extends HookConsumerWidget {
       ref.read(isTopModalOpenProvider.notifier).state = false;
     }
 
+    Future<void> handlePressed() async {
+      if (textController.text != '') {
+        isVisible.value = false;
+        Timer(Duration(milliseconds: duration), () {
+          ref.read(isTopModalOpenProvider.notifier).state = false;
+        });
+        await onPressedExec();
+        await Future.delayed(Duration(milliseconds: 750));
+        ref.read(updateFlagProvider.notifier).state = true;
+        await Future.delayed(Duration(milliseconds: duration));
+        ref.read(updateFlagProvider.notifier).state = false;
+      }
+    }
+
     return isOpen
         ? Stack(
             children: [
               BarrierScrim(
                 isActive: isVisible,
-                onTap: handleClose,
-                onDragUp: handleClose,
+                onTap: () {
+                  handleClose();
+                  handlePressed();
+                },
+                onDragUp: () {
+                  handleClose();
+                  textController.text = '';
+                },
               ),
               SlideTransition(
                 position: animation,
@@ -92,9 +115,12 @@ class TopModal extends HookConsumerWidget {
                           size: 24,
                           color: kGray900,
                         ),
-                        // TextField(),
                         Expanded(
                           child: TextField(
+                            controller: textController,
+                            onSubmitted: (_) {
+                              handlePressed();
+                            },
                             style: TextStyle(
                               fontFamily: 'NotoSansJP',
                               fontSize: kFontSizeTextLg,
@@ -111,16 +137,9 @@ class TopModal extends HookConsumerWidget {
                           ),
                         ),
                         TopModalIconButton(
-                            icon: execIcon,
-                            onPressed: () {
-                              onPressedExec();
-                              isVisible.value = false;
-                              Timer(
-                                  Duration(milliseconds: duration),
-                                  () => ref
-                                      .read(isTopModalOpenProvider.notifier)
-                                      .state = false);
-                            })
+                          icon: execIcon,
+                          onPressed: () => handlePressed(),
+                        )
                       ],
                     )),
               )

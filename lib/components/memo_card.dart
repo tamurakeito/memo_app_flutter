@@ -39,6 +39,7 @@ class MemoCard extends HookConsumerWidget {
     final MemoDetailType nullMemo =
         MemoDetailType(id: 0, name: '', tag: false, tasks: []);
     final memo = useState<MemoDetailType>(nullMemo);
+    final flag = ref.watch(updateFlagProvider);
 
     void fetch() {
       isLoading.value = true;
@@ -70,6 +71,13 @@ class MemoCard extends HookConsumerWidget {
       }
       return () {};
     }, [list]);
+
+    useEffect(() {
+      if (page == index && flag) {
+        fetch();
+        isLoaded.value = true;
+      }
+    }, [flag]);
 
     return Stack(
       children: [
