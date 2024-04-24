@@ -16,7 +16,7 @@ class Swiper extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final int page = ref.watch(memoPageProvider);
-    final List<MemoSummaryType> list = ref.watch(memoListProvider);
+    final List<MemoSummaryType> list = ref.watch(memoSummariesProvider);
 
     final isSwipeFlag = useState<bool>(false);
 

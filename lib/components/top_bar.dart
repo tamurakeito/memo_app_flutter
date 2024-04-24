@@ -10,6 +10,7 @@ import 'package:memo_app_flutter/data/api/put_restatus_memo.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class TopBar extends HookConsumerWidget {
@@ -35,12 +36,13 @@ class TopBar extends HookConsumerWidget {
           ));
         }
 
-        final summaries = await getMemoSummary();
-        final sortedList = [
-          ...summaries.where((element) => element.tag),
-          ...summaries.where((element) => !element.tag),
-        ];
-        ref.read(memoListProvider.notifier).state = sortedList;
+        // final summaries = await getMemoSummary();
+        // final sortedList = [
+        //   ...summaries.where((element) => element.tag),
+        //   ...summaries.where((element) => !element.tag),
+        // ];
+        // ref.read(memoSummariesProvider.notifier).state = sortedList;
+        final List<MemoSummaryType> sortedList = await fetchMemoSummaries(ref);
 
         int index = sortedList.indexWhere((element) => element.id == memo!.id);
         ref.read(memoPageProvider.notifier).state = index;

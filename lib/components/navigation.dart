@@ -13,7 +13,7 @@ class Navigation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<MemoSummaryType> list = ref.watch(memoListProvider);
+    final List<MemoSummaryType> list = ref.watch(memoSummariesProvider);
     final int page = ref.watch(memoPageProvider);
     return Drawer(
       child: Container(

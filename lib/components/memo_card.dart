@@ -15,6 +15,7 @@ import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class MemoCard extends HookConsumerWidget {
@@ -34,37 +35,18 @@ class MemoCard extends HookConsumerWidget {
     final isLoading = useState<bool>(false);
     final isLoaded = useState<bool>(false);
     final double screenHeight = MediaQuery.of(context).size.height;
-    final List<MemoSummaryType> list = ref.watch(memoListProvider);
+    // final List<MemoSummaryType> list = ref.watch(memoSummariesProvider);
+    final List<MemoDetailType> list = ref.watch(memoDetailsProvider);
 
     final MemoDetailType nullMemo =
         MemoDetailType(id: 0, name: '', tag: false, tasks: []);
     final memo = useState<MemoDetailType>(nullMemo);
-    final flag = ref.watch(updateFlagProvider);
+    // final flag = ref.watch(updateFlagProvider);
 
-    void fetch() {
-      isLoading.value = true;
-      getMemoDetail(id).then((data) {
-        memo.value = data;
-      }).catchError((error) {
-        print("Error fetching data: $error");
-      }).whenComplete(() {
-        isLoading.value = false;
-        isLoaded.value = true;
-      });
-    }
-
-    useEffect(() {
-      // ページが捲られたときにローディングする
-      if ((index == page - 1 || index == page || index == page + 1) &&
-          !isLoaded.value) {
-        fetch();
-      }
-      return () {};
-    }, [page]);
-
+    // ここから
     useEffect(() {
       if (page == index) {
-        fetch();
+        memo.value = list[index];
         isLoaded.value = true;
       } else {
         isLoaded.value = false;
@@ -72,12 +54,43 @@ class MemoCard extends HookConsumerWidget {
       return () {};
     }, [list]);
 
-    useEffect(() {
-      if (page == index && flag) {
-        fetch();
-        isLoaded.value = true;
-      }
-    }, [flag]);
+    // void fetch() {
+    //   isLoading.value = true;
+    //   getMemoDetail(id).then((data) {
+    //     memo.value = data;
+    //   }).catchError((error) {
+    //     print("Error fetching data: $error");
+    //   }).whenComplete(() {
+    //     isLoading.value = false;
+    //     isLoaded.value = true;
+    //   });
+    // }
+
+    // useEffect(() {
+    //   // ページが捲られたときにローディングする
+    //   if ((index == page - 1 || index == page || index == page + 1) &&
+    //       !isLoaded.value) {
+    //     fetch();
+    //   }
+    //   return () {};
+    // }, [page]);
+
+    // useEffect(() {
+    //   if (page == index) {
+    //     fetch();
+    //     isLoaded.value = true;
+    //   } else {
+    //     isLoaded.value = false;
+    //   }
+    //   return () {};
+    // }, [list]);
+
+    // useEffect(() {
+    //   if (page == index && flag) {
+    //     fetch();
+    //     isLoaded.value = true;
+    //   }
+    // }, [flag]);
 
     return Stack(
       children: [
@@ -93,7 +106,7 @@ class MemoCard extends HookConsumerWidget {
             }
             if (notification is ScrollEndNotification &&
                 isLoadable.value == true) {
-              fetch();
+              fetchMemoDetail(ref, index, id);
               isLoadable.value = false;
             }
             return false;
