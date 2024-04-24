@@ -43,17 +43,6 @@ class MemoCard extends HookConsumerWidget {
     final memo = useState<MemoDetailType>(nullMemo);
     // final flag = ref.watch(updateFlagProvider);
 
-    // ここから
-    useEffect(() {
-      if (page == index) {
-        memo.value = list[index];
-        isLoaded.value = true;
-      } else {
-        isLoaded.value = false;
-      }
-      return () {};
-    }, [list]);
-
     // void fetch() {
     //   isLoading.value = true;
     //   getMemoDetail(id).then((data) {
@@ -74,6 +63,18 @@ class MemoCard extends HookConsumerWidget {
     //   }
     //   return () {};
     // }, [page]);
+    useEffect(() {
+      // ページが捲られたときにローディングする
+      if ((index == page - 1 || index == page || index == page + 1) &&
+          !isLoaded.value) {
+        isLoading.value = true;
+        fetchMemoDetail(ref, index, list[index].id).whenComplete(() {
+          isLoading.value = false;
+          isLoaded.value = true;
+        });
+      }
+      return () {};
+    }, [page]);
 
     // useEffect(() {
     //   if (page == index) {
@@ -84,6 +85,15 @@ class MemoCard extends HookConsumerWidget {
     //   }
     //   return () {};
     // }, [list]);
+    useEffect(() {
+      if (page == index) {
+        memo.value = list[index];
+        isLoaded.value = true;
+      } else {
+        isLoaded.value = false;
+      }
+      return () {};
+    }, [list]);
 
     // useEffect(() {
     //   if (page == index && flag) {
