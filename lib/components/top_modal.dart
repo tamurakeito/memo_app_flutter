@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
@@ -81,6 +82,11 @@ class TopModal extends HookConsumerWidget {
           ref.read(isTopModalOpenProvider.notifier).state = false;
         });
         await onPressedExec();
+        // await Future.delayed(Duration(milliseconds: 750));
+        // ref.read(updateFlagProvider.notifier).state = true;
+        // await Future.delayed(Duration(milliseconds: duration));
+        // ref.read(updateFlagProvider.notifier).state = false;
+
         await Future.delayed(Duration(milliseconds: 750));
         ref.read(isLoadingProvider.notifier).state = true;
         await fetchMemoDetail(ref, page, memo!.id);

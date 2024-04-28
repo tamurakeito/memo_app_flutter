@@ -50,18 +50,39 @@ class MemoCard extends HookConsumerWidget {
       isLoading.value = false;
     }
 
+    // useEffect(() {
+    //   // ページが捲られたときにローディングする
+    //   if ((index == page - 1 || index == page || index == page + 1) &&
+    //       !isLoaded.value) {
+    //     fetch();
+    //   }
+    //   return () {};
+    // }, [page]);
     useEffect(() {
       // ページが捲られたときにローディングする
       if ((index == page - 1 || index == page || index == page + 1) &&
           !isLoaded.value) {
-        fetch();
+        isLoading.value = true;
+        fetchMemoDetail(ref, index, list[index].id).whenComplete(() {
+          isLoading.value = false;
+          isLoaded.value = true;
+        });
       }
       return () {};
     }, [page]);
 
+    // useEffect(() {
+    //   if (page == index) {
+    //     fetch();
+    //     isLoaded.value = true;
+    //   } else {
+    //     isLoaded.value = false;
+    //   }
+    //   return () {};
+    // }, [list]);
     useEffect(() {
       if (page == index) {
-        fetch();
+        memo.value = list[index];
         isLoaded.value = true;
       } else {
         isLoaded.value = false;
@@ -90,7 +111,7 @@ class MemoCard extends HookConsumerWidget {
             }
             if (notification is ScrollEndNotification &&
                 isLoadable.value == true) {
-              fetch();
+              fetchMemoDetail(ref, index, id);
               isLoadable.value = false;
             }
             return false;
