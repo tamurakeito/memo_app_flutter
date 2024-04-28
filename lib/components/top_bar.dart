@@ -36,18 +36,12 @@ class TopBar extends HookConsumerWidget {
           ));
         }
 
-        // final summaries = await getMemoSummary();
-        // final sortedList = [
-        //   ...summaries.where((element) => element.tag),
-        //   ...summaries.where((element) => !element.tag),
-        // ];
-        // ref.read(memoSummariesProvider.notifier).state = sortedList;
-        final List<MemoSummaryType> sortedList = await fetchMemoSummaries(ref);
+        final sortedList = await fetchMemoSummaries(ref);
 
         int index = sortedList.indexWhere((element) => element.id == memo!.id);
         ref.read(memoPageProvider.notifier).state = index;
       } catch (error) {
-        print("Error fetching data: $error");
+        print("Error fetching data3: $error");
       }
     }
 

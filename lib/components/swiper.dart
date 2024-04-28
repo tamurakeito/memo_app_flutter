@@ -27,13 +27,17 @@ class Swiper extends HookConsumerWidget {
         int currentPage = ref.watch(memoPageProvider);
         if (turnedPage == currentPage) {
           putClientData(ClientData(tab: currentPage)).catchError((error) {
-            print("Error fetching data: $error");
+            print("Error fetching data4: $error");
           });
         }
       });
       // memoProviderにセット
-      Timer(Duration.zero,
-          () => ref.read(memoProvider.notifier).state = list[page]);
+      Timer(
+        Duration.zero,
+        () => ref.read(memoProvider.notifier).state = list.length > page
+            ? list[page]
+            : MemoSummaryType(id: 0, name: '', tag: false, length: 0),
+      );
       return () {};
     }, [page]);
 

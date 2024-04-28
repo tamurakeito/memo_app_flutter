@@ -35,25 +35,20 @@ class MemoCard extends HookConsumerWidget {
     final isLoading = useState<bool>(false);
     final isLoaded = useState<bool>(false);
     final double screenHeight = MediaQuery.of(context).size.height;
-    // final List<MemoSummaryType> list = ref.watch(memoSummariesProvider);
     final List<MemoDetailType> list = ref.watch(memoDetailsProvider);
 
     final MemoDetailType nullMemo =
         MemoDetailType(id: 0, name: '', tag: false, tasks: []);
     final memo = useState<MemoDetailType>(nullMemo);
-    // final flag = ref.watch(updateFlagProvider);
+    final memoPro = ref.watch(memoProvider);
 
-    // void fetch() {
-    //   isLoading.value = true;
-    //   getMemoDetail(id).then((data) {
-    //     memo.value = data;
-    //   }).catchError((error) {
-    //     print("Error fetching data: $error");
-    //   }).whenComplete(() {
-    //     isLoading.value = false;
-    //     isLoaded.value = true;
-    //   });
-    // }
+    Future<void> fetch() async {
+      isLoading.value = true;
+      MemoDetailType fetchMemo = await fetchMemoDetail(ref, index, id);
+      memo.value = fetchMemo;
+      isLoaded.value = true;
+      isLoading.value = false;
+    }
 
     // useEffect(() {
     //   // ページが捲られたときにローディングする
@@ -95,12 +90,12 @@ class MemoCard extends HookConsumerWidget {
       return () {};
     }, [list]);
 
-    // useEffect(() {
-    //   if (page == index && flag) {
-    //     fetch();
-    //     isLoaded.value = true;
-    //   }
-    // }, [flag]);
+    useEffect(() {
+      if (memoPro?.id == id) {
+        memo.value = list[index];
+        isLoaded.value = true;
+      }
+    }, [memoPro]);
 
     return Stack(
       children: [

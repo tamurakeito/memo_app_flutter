@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
+import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/ui/molecules/barrier_scrim.dart';
 import 'package:memo_app_flutter/utils/functions.dart';
@@ -71,8 +72,8 @@ class TopModal extends HookConsumerWidget {
       ref.read(isTopModalOpenProvider.notifier).state = false;
     }
 
-    final page = ref.read(memoPageProvider.notifier).state;
-    final list = ref.read(memoSummariesProvider.notifier).state;
+    final page = ref.watch(memoPageProvider);
+    final memo = ref.watch(memoProvider);
 
     Future<void> handlePressed() async {
       if (textController.text != '') {
@@ -87,7 +88,9 @@ class TopModal extends HookConsumerWidget {
         // ref.read(updateFlagProvider.notifier).state = false;
 
         await Future.delayed(Duration(milliseconds: 750));
-        fetchMemoDetail(ref, page, list[page].id);
+        ref.read(isLoadingProvider.notifier).state = true;
+        await fetchMemoDetail(ref, page, memo!.id);
+        ref.read(isLoadingProvider.notifier).state = false;
       }
     }
 
