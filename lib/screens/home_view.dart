@@ -19,6 +19,7 @@ import 'package:memo_app_flutter/data/api/get_memo_summary.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/skeleton_container.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,28 +35,39 @@ class HomeView extends HookConsumerWidget {
 
     final isLoading = ref.watch(isLoadingProvider);
 
-    Future<void> fetchAndSetData() async {
-      try {
-        final summaries = await getMemoSummary();
-        final sortedList = [
-          ...summaries.where((element) => element.tag),
-          ...summaries.where((element) => !element.tag),
-        ];
-        ref.read(memoListProvider.notifier).state = sortedList;
+    // Future<void> fetchMemoSummaries() async {
+    //   try {
+    //     final summaries = await getMemoSummary();
+    //     final sortedList = [
+    //       ...summaries.where((element) => element.tag),
+    //       ...summaries.where((element) => !element.tag),
+    //     ];
+    //     ref.read(memoSummariesProvider.notifier).state = sortedList;
 
-        final clientData = await getClientData();
-        ref.read(memoPageProvider.notifier).state = clientData.tab;
+    //     final clientData = await getClientData();
+    //     ref.read(memoPageProvider.notifier).state = clientData.tab;
 
-        if (sortedList.isNotEmpty && sortedList.length > clientData.tab) {
-          ref.read(memoProvider.notifier).state = sortedList[clientData.tab];
-        }
-      } catch (error) {
-        print("Error fetching data: $error");
+    //     if (sortedList.isNotEmpty && sortedList.length > clientData.tab) {
+    //       ref.read(memoProvider.notifier).state = sortedList[clientData.tab];
+    //     }
+    //   } catch (error) {
+    //     print("Error fetching data: $error");
+    //   }
+    // }
+    Future<void> fetch() async {
+      final List<MemoSummaryType> sortedList = await fetchMemoSummaries(ref);
+      final ClientData clientData = await getClientData();
+      ref.read(memoPageProvider.notifier).state = clientData.tab;
+      print(sortedList.length);
+
+      if (sortedList.isNotEmpty && sortedList.length > clientData.tab) {
+        ref.read(memoProvider.notifier).state = sortedList[clientData.tab];
+        fetchMemoDetail(ref, clientData.tab, sortedList[clientData.tab].id);
       }
     }
 
     useEffect(() {
-      fetchAndSetData();
+      fetch();
     }, []);
 
     return Scaffold(

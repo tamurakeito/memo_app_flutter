@@ -23,7 +23,7 @@ class AddTaskModal extends HookConsumerWidget {
       final TaskType data = TaskType(
           id: 0, name: controller.text, memoId: memo!.id, complete: false);
       postAddTask(data).catchError((error) {
-        print("Error fetching data: $error");
+        print("Error fetching data5: $error");
       }).whenComplete(() {
         controller.text = "";
       });

@@ -15,6 +15,7 @@ import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class MemoCard extends HookConsumerWidget {
@@ -34,23 +35,19 @@ class MemoCard extends HookConsumerWidget {
     final isLoading = useState<bool>(false);
     final isLoaded = useState<bool>(false);
     final double screenHeight = MediaQuery.of(context).size.height;
-    final List<MemoSummaryType> list = ref.watch(memoListProvider);
+    final List<MemoDetailType> list = ref.watch(memoDetailsProvider);
 
     final MemoDetailType nullMemo =
         MemoDetailType(id: 0, name: '', tag: false, tasks: []);
     final memo = useState<MemoDetailType>(nullMemo);
-    final flag = ref.watch(updateFlagProvider);
+    final memoPro = ref.watch(memoProvider);
 
-    void fetch() {
+    Future<void> fetch() async {
       isLoading.value = true;
-      getMemoDetail(id).then((data) {
-        memo.value = data;
-      }).catchError((error) {
-        print("Error fetching data: $error");
-      }).whenComplete(() {
-        isLoading.value = false;
-        isLoaded.value = true;
-      });
+      MemoDetailType fetchMemo = await fetchMemoDetail(ref, index, id);
+      memo.value = fetchMemo;
+      isLoaded.value = true;
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -73,11 +70,11 @@ class MemoCard extends HookConsumerWidget {
     }, [list]);
 
     useEffect(() {
-      if (page == index && flag) {
-        fetch();
+      if (memoPro?.id == id) {
+        memo.value = list[index];
         isLoaded.value = true;
       }
-    }, [flag]);
+    }, [memoPro]);
 
     return Stack(
       children: [
