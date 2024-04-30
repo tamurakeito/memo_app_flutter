@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
@@ -8,13 +10,18 @@ import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
-class Navigation extends ConsumerWidget {
+class Navigation extends HookConsumerWidget {
   const Navigation({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<MemoSummaryType> list = ref.watch(memoSummariesProvider);
     final int page = ref.watch(memoPageProvider);
+    final ValueNotifier<bool> isAddMemo = useState(false);
+    FocusNode myFocusNode = FocusNode();
+    useEffect(() {
+      if (isAddMemo.value) myFocusNode.requestFocus();
+    }, [isAddMemo.value]);
     return Drawer(
       child: Container(
         color: kWhite,
@@ -39,29 +46,29 @@ class Navigation extends ConsumerWidget {
                 return MemoListBlock(
                   text: memo.name,
                   length: memo.length,
-                  isFocused: page == index,
+                  isFocused: page == index && !isAddMemo.value,
                   jumpPage: index,
                 );
               }).toList(),
             ),
             MemoListBox(
               isTagged: false,
-              memoList: list
-                  .where((memo) => !memo.tag)
-                  .toList()
-                  .asMap()
-                  .entries
-                  .map((entry) {
-                int index =
-                    entry.key + list.where((element) => element.tag).length;
-                MemoSummaryType memo = entry.value;
-                return MemoListBlock(
-                  text: memo.name,
-                  length: memo.length,
-                  isFocused: page == index,
-                  jumpPage: index,
-                );
-              }).toList(),
+              memoList:
+                  list.where((memo) => !memo.tag).toList().asMap().entries.map(
+                (entry) {
+                  int index =
+                      entry.key + list.where((element) => element.tag).length;
+                  MemoSummaryType memo = entry.value;
+                  return MemoListBlock(
+                    text: memo.name,
+                    length: memo.length,
+                    isFocused: page == index && !isAddMemo.value,
+                    jumpPage: index,
+                  );
+                },
+              ).toList(),
+              isAddMemo: isAddMemo,
+              myFocusNode: myFocusNode,
             )
           ],
         ),
@@ -73,8 +80,15 @@ class Navigation extends ConsumerWidget {
 class MemoListBox extends StatelessWidget {
   final bool isTagged;
   final List<MemoListBlock> memoList;
-  const MemoListBox(
-      {super.key, required this.isTagged, required this.memoList});
+  final ValueNotifier<bool>? isAddMemo;
+  final FocusNode? myFocusNode;
+  const MemoListBox({
+    super.key,
+    required this.isTagged,
+    required this.memoList,
+    this.isAddMemo,
+    this.myFocusNode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -84,22 +98,71 @@ class MemoListBox extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.fromLTRB(21, 10, 21, 10),
-            child: Row(children: [
-              Icon(
-                isTagged ? Icons.bookmark : Icons.bookmark_border,
-                size: 19,
-                color: kGray700,
-              ),
-              const SizedBox(
-                width: 16,
-              ),
-              AtomicText(
-                isTagged ? "固定" : "リスト",
-                style: AtomicTextStyle.h4,
-                type: AtomicTextColor.light,
-              ),
-            ]),
+            child: Row(
+              children: [
+                Icon(
+                  isTagged ? Icons.bookmark : Icons.bookmark_border,
+                  size: 19,
+                  color: kGray700,
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                AtomicText(
+                  isTagged ? "固定" : "リスト",
+                  style: AtomicTextStyle.h4,
+                  type: AtomicTextColor.light,
+                ),
+                Spacer(),
+                if (!isTagged)
+                  Button(
+                    onPressed: () {
+                      isAddMemo?.value = true;
+                    },
+                    child: Icon(
+                      LineIcons.plus,
+                      size: 19,
+                      color: kGray700,
+                    ),
+                  ),
+              ],
+            ),
           ),
+          if (!isTagged && isAddMemo?.value == true)
+            Container(
+              color: kGray100,
+              padding: const EdgeInsets.fromLTRB(23, 0, 23, 0),
+              child: Row(
+                children: [
+                  const AtomicCircle(
+                    type: AtomicCircleType.gray,
+                    radius: 6,
+                  ),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      // controller: textController,
+                      onSubmitted: (_) {},
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: kFontSizeHeadlineH5,
+                        fontWeight: FontWeight.normal,
+                        color: kBlack,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: '新しいメモ',
+                        border: InputBorder.none, // 枠線なし
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      focusNode: myFocusNode,
+                    ),
+                  ),
+                  AtomicText('0', style: AtomicTextStyle.sm)
+                ],
+              ),
+            ),
           ...memoList
         ],
       ),
