@@ -6,7 +6,7 @@ Future<void> postAddMemo(MemoDetailType data) async {
     'id': data.id,
     'name': data.name,
     'tag': data.tag,
-    'tasks': [],
+    'tasks': data.tasks,
   };
   final response =
       await clientRequest('/add-memo', method: 'POST', data: jsonData);

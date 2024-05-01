@@ -3,11 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/data/api/post_add_memo.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class Navigation extends HookConsumerWidget {
@@ -77,7 +79,7 @@ class Navigation extends HookConsumerWidget {
   }
 }
 
-class MemoListBox extends StatelessWidget {
+class MemoListBox extends HookConsumerWidget {
   final bool isTagged;
   final List<MemoListBlock> memoList;
   final ValueNotifier<bool>? isAddMemo;
@@ -91,7 +93,16 @@ class MemoListBox extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    Future<void> handleExec(String value) async {
+      MemoDetailType data =
+          MemoDetailType(id: 0, name: value, tag: false, tasks: []);
+      await postAddMemo(data);
+      fetchMemoSummaries(ref);
+      await Future.delayed(Duration(milliseconds: 150));
+      Navigator.pop(context);
+    }
+
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 12, 0, 18),
       child: Column(
@@ -143,8 +154,9 @@ class MemoListBox extends StatelessWidget {
                   ),
                   Expanded(
                     child: TextField(
-                      // controller: textController,
-                      onSubmitted: (_) {},
+                      onSubmitted: (String value) {
+                        handleExec(value);
+                      },
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: kFontSizeHeadlineH5,
