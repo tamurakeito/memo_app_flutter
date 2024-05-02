@@ -14,6 +14,8 @@ clientRequest(String path,
       return http.put(uri,
           body: json.encode(data),
           headers: {'Content-Type': 'application/json'});
+    case 'DELETE':
+      return http.delete(uri);
     case 'GET':
     default:
       return http.get(uri);
