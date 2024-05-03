@@ -7,9 +7,11 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:memo_app_flutter/data/api/delete_memo.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/molecules/barrier_scrim.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class BottomModal extends HookConsumerWidget {
@@ -87,15 +89,18 @@ class BottomModal extends HookConsumerWidget {
       isModalDown = false;
     }
 
-    void Function() handleSubmit = () => {
-          deleteController.forward(),
-          Timer(Duration(milliseconds: duration), () {
-            ref.read(isBottomModalOpenProvider.notifier).state = false;
-            isVisible.value = false;
-            deleteController.reset();
-            movePosition.value = 0;
-          })
-        };
+    final memo = ref.watch(memoProvider);
+
+    void Function() handleSubmit = () async {
+      deleteController.forward();
+      await Future.delayed(Duration(milliseconds: duration));
+      ref.read(isBottomModalOpenProvider.notifier).state = false;
+      isVisible.value = false;
+      deleteController.reset();
+      movePosition.value = 0;
+      await deleteMemo(memo!.id);
+      fetchNewMemoSummaries(ref);
+    };
 
     void Function() handleCancel = () => {
           isVisible.value = false,
@@ -173,7 +178,7 @@ class BottomModal extends HookConsumerWidget {
                           child: Stack(
                             children: [
                               ModalContent(
-                                view: DefaultView(),
+                                view: DefaultView(title: memo!.name),
                                 isActive: isModalDefault,
                               ),
                               ModalContent(
@@ -244,14 +249,15 @@ class ModalContent extends HookWidget {
 }
 
 class DefaultView extends StatelessWidget {
-  const DefaultView({super.key});
+  final String title;
+  const DefaultView({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
         AtomicText(
-          "『Todoリスト』を削除します",
+          "『$title』を削除します",
           style: AtomicTextStyle.h3,
           type: AtomicTextColor.dark,
         ),
