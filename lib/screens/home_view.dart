@@ -35,25 +35,6 @@ class HomeView extends HookConsumerWidget {
 
     final isLoading = ref.watch(isLoadingProvider);
 
-    // Future<void> fetchMemoSummaries() async {
-    //   try {
-    //     final summaries = await getMemoSummary();
-    //     final sortedList = [
-    //       ...summaries.where((element) => element.tag),
-    //       ...summaries.where((element) => !element.tag),
-    //     ];
-    //     ref.read(memoSummariesProvider.notifier).state = sortedList;
-
-    //     final clientData = await getClientData();
-    //     ref.read(memoPageProvider.notifier).state = clientData.tab;
-
-    //     if (sortedList.isNotEmpty && sortedList.length > clientData.tab) {
-    //       ref.read(memoProvider.notifier).state = sortedList[clientData.tab];
-    //     }
-    //   } catch (error) {
-    //     print("Error fetching data: $error");
-    //   }
-    // }
     Future<void> fetch() async {
       final List<MemoSummaryType> sortedList = await fetchMemoSummaries(ref);
       final ClientData clientData = await getClientData();
@@ -109,7 +90,7 @@ class HomeView extends HookConsumerWidget {
           RemoveMemoModal(),
         ],
       ),
-      drawer: const Navigation(),
+      drawer: Navigation(homeRef: ref),
     );
   }
 }

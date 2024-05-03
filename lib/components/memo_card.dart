@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
@@ -34,7 +35,6 @@ class MemoCard extends HookConsumerWidget {
     final isSyncActive = useState<bool>(false);
     final isLoading = useState<bool>(false);
     final isLoaded = useState<bool>(false);
-    final double screenHeight = MediaQuery.of(context).size.height;
     final List<MemoDetailType> list = ref.watch(memoDetailsProvider);
 
     final MemoDetailType nullMemo =
@@ -98,7 +98,8 @@ class MemoCard extends HookConsumerWidget {
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             child: Container(
-              constraints: BoxConstraints(minHeight: screenHeight - 160),
+              constraints:
+                  BoxConstraints(minHeight: screenHeight(context) - 160),
               child: !isLoading.value && memo.value.name != nullMemo.name
                   ? MemoLayout(memo: memo.value)
                   : SkeletonMemoCard(),
@@ -143,17 +144,19 @@ class MemoLayout extends HookWidget {
 
     return Column(
       children: [
+        TitleBlock(
+          text: memo.name,
+        ),
         // 未完了リスト
-        Container(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Column(
-              children: [
-                TitleBlock(
-                  text: memo.name,
-                ),
-                ...uncompleteList
-              ],
-            )),
+        uncompleteList.isNotEmpty
+            ? Container(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Column(
+                  children: [...uncompleteList],
+                ))
+            : SizedBox(
+                height: 5,
+              ),
         // 完了済リスト
         if (completeList.isNotEmpty)
           Column(
@@ -211,6 +214,30 @@ class MemoLayout extends HookWidget {
                 ),
               ),
             ],
+          ),
+        // リストが空配列のときの表示
+        if (memo.tasks.isEmpty)
+          Container(
+            height: screenHeight(context) - 350,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  FeatherIcons.fileMinus,
+                  size: 42,
+                  color: kGray500,
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                AtomicText(
+                  '登録されているタスクがありません',
+                  style: AtomicTextStyle.h5,
+                  type: AtomicTextColor.light,
+                ),
+              ],
+            ),
           ),
       ],
     );

@@ -13,7 +13,8 @@ import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
 class Navigation extends HookConsumerWidget {
-  const Navigation({super.key});
+  final WidgetRef homeRef;
+  const Navigation({super.key, required this.homeRef});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,6 +72,7 @@ class Navigation extends HookConsumerWidget {
               ).toList(),
               isAddMemo: isAddMemo,
               myFocusNode: myFocusNode,
+              homeRef: homeRef,
             )
           ],
         ),
@@ -79,27 +81,31 @@ class Navigation extends HookConsumerWidget {
   }
 }
 
-class MemoListBox extends HookConsumerWidget {
+class MemoListBox extends HookWidget {
   final bool isTagged;
   final List<MemoListBlock> memoList;
   final ValueNotifier<bool>? isAddMemo;
   final FocusNode? myFocusNode;
+  final WidgetRef? homeRef;
   const MemoListBox({
     super.key,
     required this.isTagged,
     required this.memoList,
     this.isAddMemo,
     this.myFocusNode,
+    this.homeRef,
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     Future<void> handleExec(String value) async {
-      MemoDetailType data =
-          MemoDetailType(id: 0, name: value, tag: false, tasks: []);
-      await postAddMemo(data);
-      fetchMemoSummaries(ref);
-      await Future.delayed(Duration(milliseconds: 150));
+      if (value != '') {
+        MemoDetailType data =
+            MemoDetailType(id: 0, name: value, tag: false, tasks: []);
+        await postAddMemo(data);
+        fetchNewMemoSummaries(homeRef!);
+        await Future.delayed(Duration(milliseconds: 1));
+      }
       Navigator.pop(context);
     }
 

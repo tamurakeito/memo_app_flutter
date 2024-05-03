@@ -49,3 +49,8 @@ const Color kWhiteSoft = kGray400;
 const Color kWhiteHover = kGray300;
 // other
 const Color kScrimColor = Color(0x8A000000);
+
+/// Layout
+double screenHeight(BuildContext context) {
+  return MediaQuery.of(context).size.height;
+}
