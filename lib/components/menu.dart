@@ -18,7 +18,7 @@ class Menu extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isOpen = ref.watch(isMenuOpenProvider);
     final isVisible = useState<bool>(false);
-    final duration = 100;
+    final duration = Duration(milliseconds: 100);
 
     useEffect(() {
       if (isOpen)
@@ -38,7 +38,7 @@ class Menu extends HookConsumerWidget {
                       children: [
                         AnimatedOpacity(
                           opacity: isVisible.value ? 1 : 0,
-                          duration: Duration(milliseconds: duration),
+                          duration: duration,
                           child: Container(
                             width: 220,
                             padding: const EdgeInsets.fromLTRB(18, 24, 18, 24),
@@ -73,7 +73,21 @@ class Menu extends HookConsumerWidget {
                                 MenuBlock(
                                   icon: LineIcons.alternateTrashAlt,
                                   text: "メモを削除",
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    isVisible.value = false;
+                                    Timer(
+                                      duration,
+                                      () => ref
+                                          .read(isMenuOpenProvider.notifier)
+                                          .state = false,
+                                    );
+                                    Timer(
+                                        duration,
+                                        () => ref
+                                            .read(isBottomModalOpenProvider
+                                                .notifier)
+                                            .state = true);
+                                  },
                                 ),
                                 Container(
                                   margin:
