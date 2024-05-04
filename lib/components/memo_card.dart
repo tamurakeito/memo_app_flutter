@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -10,12 +11,14 @@ import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
 import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
+import 'package:memo_app_flutter/data/api/put_restatus_task.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
+import 'package:memo_app_flutter/ui/molecules/loading_circle_mini.dart';
 import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
@@ -101,7 +104,7 @@ class MemoCard extends HookConsumerWidget {
               constraints:
                   BoxConstraints(minHeight: screenHeight(context) - 160),
               child: !isLoading.value && memo.value.name != nullMemo.name
-                  ? MemoLayout(memo: memo.value)
+                  ? MemoLayout(memo: memo)
                   : SkeletonMemoCard(),
             ),
           ),
@@ -115,18 +118,18 @@ class MemoCard extends HookConsumerWidget {
 }
 
 class MemoLayout extends HookWidget {
-  final MemoDetailType memo;
+  final ValueNotifier<MemoDetailType> memo;
   const MemoLayout({super.key, required this.memo});
 
   @override
   Widget build(BuildContext context) {
-    final uncompleteList = memo.tasks
+    final uncompleteList = memo.value.tasks
         .where((element) => !element.complete)
-        .map((task) => ListBlock(isCompleted: false, text: task.name))
+        .map((task) => ListBlock(task: task, memo: memo))
         .toList();
-    final completeList = memo.tasks
+    final completeList = memo.value.tasks
         .where((element) => element.complete)
-        .map((task) => ListBlock(isCompleted: true, text: task.name))
+        .map((task) => ListBlock(task: task, memo: memo))
         .toList();
 
     final isOpenCompletedList = useState<bool>(true);
@@ -145,7 +148,7 @@ class MemoLayout extends HookWidget {
     return Column(
       children: [
         TitleBlock(
-          text: memo.name,
+          text: memo.value.name,
         ),
         // 未完了リスト
         uncompleteList.isNotEmpty
@@ -216,7 +219,7 @@ class MemoLayout extends HookWidget {
             ],
           ),
         // リストが空配列のときの表示
-        if (memo.tasks.isEmpty)
+        if (memo.value.tasks.isEmpty)
           Container(
             height: screenHeight(context) - 350,
             alignment: Alignment.center,
@@ -265,17 +268,19 @@ class TitleBlock extends StatelessWidget {
   }
 }
 
-class ListBlock extends StatelessWidget {
-  final bool isCompleted;
-  final String text;
-  const ListBlock({super.key, required this.isCompleted, required this.text});
+class ListBlock extends HookConsumerWidget {
+  final TaskType task;
+  final ValueNotifier<MemoDetailType> memo;
+  const ListBlock({super.key, required this.task, required this.memo});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = useState(false);
+    final page = ref.watch(memoPageProvider);
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
       child: Row(children: [
-        !isCompleted
+        !task.complete
             ? const AtomicCircle(
                 type: AtomicCircleType.white,
               )
@@ -288,21 +293,31 @@ class ListBlock extends StatelessWidget {
           width: 16,
         ),
         AtomicText(
-          text,
+          task.name,
           style: AtomicTextStyle.md,
-          type: !isCompleted ? AtomicTextColor.dark : AtomicTextColor.light,
+          type: !task.complete ? AtomicTextColor.dark : AtomicTextColor.light,
         ),
         const Spacer(),
-        !isCompleted
+        !task.complete
             ? Button(
-                onPressed: () {
-                  //
+                onPressed: () async {
+                  isLoading.value = true;
+                  final TaskType data = TaskType(
+                      id: task.id,
+                      name: task.name,
+                      memoId: task.memoId,
+                      complete: true);
+                  await putRestatusTask(data);
+                  memo.value = await fetchMemoDetail(ref, page, task.memoId);
+                  isLoading.value = false;
                 },
-                child: const Icon(
-                  Icons.check,
-                  size: 18,
-                  color: kGray700,
-                ))
+                child: !isLoading.value
+                    ? const Icon(
+                        Icons.check,
+                        size: 18,
+                        color: kGray700,
+                      )
+                    : LoadingCircleMini())
             : Button(
                 onPressed: () {
                   //
