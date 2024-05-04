@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/data/api/delete_task.dart';
 import 'package:memo_app_flutter/data/api/put_restatus_task.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
@@ -56,7 +57,28 @@ class Menu extends HookConsumerWidget {
           complete: false,
         );
         await putRestatusTask(data);
-        print('operation');
+      }
+
+      handleTaskBulkOperate(handleOperation);
+    }
+
+    Future<void> handleTaskBulkCompletes() async {
+      Future<void> handleOperation(TaskType task) async {
+        final TaskType data = TaskType(
+          id: task.id,
+          name: task.name,
+          memoId: task.memoId,
+          complete: true,
+        );
+        await putRestatusTask(data);
+      }
+
+      handleTaskBulkOperate(handleOperation);
+    }
+
+    Future<void> handleTaskBulkDelete() async {
+      Future<void> handleOperation(TaskType task) async {
+        await deleteTask(task.id);
       }
 
       handleTaskBulkOperate(handleOperation);
@@ -135,19 +157,17 @@ class Menu extends HookConsumerWidget {
                                 MenuBlock(
                                   icon: LineIcons.circle,
                                   text: "全てを未完了に",
-                                  onPressed: () {
-                                    handleTaskBulkUncompletes();
-                                  },
+                                  onPressed: handleTaskBulkUncompletes,
                                 ),
                                 MenuBlock(
                                   icon: LineIcons.checkCircle,
                                   text: "全てを完了済に",
-                                  onPressed: () {},
+                                  onPressed: handleTaskBulkCompletes,
                                 ),
                                 MenuBlock(
                                   icon: LineIcons.timesCircle,
                                   text: "完了済を削除",
-                                  onPressed: () {},
+                                  onPressed: handleTaskBulkDelete,
                                 ),
                               ],
                             ),
