@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/data/api/put_restatus_task.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
+import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
 import 'package:memo_app_flutter/ui/molecules/barrier_scrim.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -19,11 +22,45 @@ class Menu extends HookConsumerWidget {
     final isOpen = ref.watch(isMenuOpenProvider);
     final isVisible = useState<bool>(false);
     final duration = Duration(milliseconds: 100);
+    final list = ref.watch(memoDetailsProvider);
+    final page = ref.watch(memoPageProvider);
 
     useEffect(() {
       if (isOpen)
         Timer(const Duration(milliseconds: 1), () => isVisible.value = true);
     }, [isOpen]);
+
+    Future<void> handleTaskBulkOperate(
+      Future<void> handleOperation(TaskType task),
+    ) async {
+      isVisible.value = false;
+      Timer(
+        duration,
+        () => ref.read(isMenuOpenProvider.notifier).state = false,
+      );
+      ref.read(isLoadingProvider.notifier).state = true;
+      final memo = list[page];
+      memo.tasks.forEach((task) {
+        handleOperation(task);
+      });
+      await fetchMemoDetail(ref, page, memo.id);
+      ref.read(isLoadingProvider.notifier).state = false;
+    }
+
+    Future<void> handleTaskBulkUncompletes() async {
+      Future<void> handleOperation(TaskType task) async {
+        final TaskType data = TaskType(
+          id: task.id,
+          name: task.name,
+          memoId: task.memoId,
+          complete: false,
+        );
+        await putRestatusTask(data);
+        print('operation');
+      }
+
+      handleTaskBulkOperate(handleOperation);
+    }
 
     return isOpen
         ? Stack(children: [
@@ -98,7 +135,9 @@ class Menu extends HookConsumerWidget {
                                 MenuBlock(
                                   icon: LineIcons.circle,
                                   text: "全てを未完了に",
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    handleTaskBulkUncompletes();
+                                  },
                                 ),
                                 MenuBlock(
                                   icon: LineIcons.checkCircle,
