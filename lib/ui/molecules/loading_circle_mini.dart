@@ -3,8 +3,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:line_icons/line_icons.dart';
 import 'dart:math';
 
+import 'package:memo_app_flutter/utils/style.dart';
+
 class LoadingCircleMini extends HookWidget {
-  const LoadingCircleMini({super.key});
+  final LoadingCircleMiniColor? type;
+  const LoadingCircleMini({super.key, this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +25,11 @@ class LoadingCircleMini extends HookWidget {
       },
       child: Icon(
         LineIcons.circleNotched,
+        color: type == LoadingCircleMiniColor.light ? kGray600 : kGray800,
         size: 18,
       ),
     );
   }
 }
+
+enum LoadingCircleMiniColor { dark, light }

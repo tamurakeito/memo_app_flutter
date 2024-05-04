@@ -10,6 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
+import 'package:memo_app_flutter/data/api/delete_task.dart';
 import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/data/api/put_restatus_task.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
@@ -317,16 +318,25 @@ class ListBlock extends HookConsumerWidget {
                         size: 18,
                         color: kGray700,
                       )
-                    : LoadingCircleMini())
+                    : LoadingCircleMini(),
+              )
             : Button(
-                onPressed: () {
-                  //
+                onPressed: () async {
+                  isLoading.value = true;
+                  await deleteTask(task.id);
+                  memo.value = await fetchMemoDetail(ref, page, task.memoId);
+                  isLoading.value = false;
                 },
-                child: const Icon(
-                  Icons.clear,
-                  size: 18,
-                  color: kGray500,
-                )),
+                child: !isLoading.value
+                    ? const Icon(
+                        Icons.clear,
+                        size: 18,
+                        color: kGray500,
+                      )
+                    : LoadingCircleMini(
+                        type: LoadingCircleMiniColor.light,
+                      ),
+              ),
       ]),
     );
   }
