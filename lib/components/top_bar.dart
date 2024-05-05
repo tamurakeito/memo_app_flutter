@@ -10,6 +10,7 @@ import 'package:memo_app_flutter/data/api/put_restatus_memo.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/ui/molecules/loading_circle_mini.dart';
 import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
@@ -25,8 +26,11 @@ class TopBar extends HookConsumerWidget {
     final int page = ref.watch(memoPageProvider);
     final MemoSummaryType? memo = ref.watch(memoProvider);
 
+    final isLoading = useState(false);
+
     Future<void> handleRestatusTag(bool tag) async {
       try {
+        isLoading.value = true;
         if (memo != null) {
           await putRestatusMemo(MemoSummaryType(
             id: memo.id,
@@ -40,6 +44,7 @@ class TopBar extends HookConsumerWidget {
 
         int index = sortedList.indexWhere((element) => element.id == memo!.id);
         ref.read(memoPageProvider.notifier).state = index;
+        isLoading.value = false;
       } catch (error) {
         print("Error fetching data3: $error");
       }
@@ -61,12 +66,14 @@ class TopBar extends HookConsumerWidget {
                   },
                 ),
                 const Spacer(),
-                TopBarIconButton(
-                  icon: memo.tag ? Icons.bookmark : Icons.bookmark_border,
-                  onPressed: () {
-                    handleRestatusTag(!memo.tag);
-                  },
-                ),
+                !isLoading.value
+                    ? TopBarIconButton(
+                        icon: memo.tag ? Icons.bookmark : Icons.bookmark_border,
+                        onPressed: () {
+                          handleRestatusTag(!memo.tag);
+                        },
+                      )
+                    : LoadingCircleMini(),
                 const SizedBox(
                   width: 18,
                 ),
