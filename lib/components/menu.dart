@@ -50,13 +50,15 @@ class Menu extends HookConsumerWidget {
 
     Future<void> handleTaskBulkUncompletes() async {
       Future<void> handleOperation(TaskType task) async {
-        final TaskType data = TaskType(
-          id: task.id,
-          name: task.name,
-          memoId: task.memoId,
-          complete: false,
-        );
-        await putRestatusTask(data);
+        if (task.complete) {
+          final TaskType data = TaskType(
+            id: task.id,
+            name: task.name,
+            memoId: task.memoId,
+            complete: false,
+          );
+          await putRestatusTask(data);
+        }
       }
 
       handleTaskBulkOperate(handleOperation);
@@ -64,13 +66,15 @@ class Menu extends HookConsumerWidget {
 
     Future<void> handleTaskBulkCompletes() async {
       Future<void> handleOperation(TaskType task) async {
-        final TaskType data = TaskType(
-          id: task.id,
-          name: task.name,
-          memoId: task.memoId,
-          complete: true,
-        );
-        await putRestatusTask(data);
+        if (!task.complete) {
+          final TaskType data = TaskType(
+            id: task.id,
+            name: task.name,
+            memoId: task.memoId,
+            complete: true,
+          );
+          await putRestatusTask(data);
+        }
       }
 
       handleTaskBulkOperate(handleOperation);
@@ -78,7 +82,7 @@ class Menu extends HookConsumerWidget {
 
     Future<void> handleTaskBulkDelete() async {
       Future<void> handleOperation(TaskType task) async {
-        await deleteTask(task.id);
+        if (task.complete) await deleteTask(task.id);
       }
 
       handleTaskBulkOperate(handleOperation);
