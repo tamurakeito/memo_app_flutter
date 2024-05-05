@@ -42,6 +42,7 @@ class RenameMemoModal extends HookConsumerWidget {
           ref.read(isLoadingProvider.notifier).state = true;
           await fetchMemoDetail(ref, page, memo!.id, page);
           ref.read(isLoadingProvider.notifier).state = false;
+          fetchMemoSummaries(ref);
         });
         ;
       }
