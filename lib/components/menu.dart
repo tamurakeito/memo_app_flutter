@@ -193,45 +193,6 @@ class Menu extends HookConsumerWidget {
           ])
         : const SizedBox.shrink();
   }
-
-  // late AnimationController _controller;
-
-  // void close() {
-  //   _controller.fling(velocity: -1.0);
-  //   // widget.drawerCallback?.call(false);å
-  // }
-
-  // late ColorTween _scrimColorTween;
-  // ColorTween _buildScrimColorTween() {
-  //   return ColorTween(
-  //     begin: Colors.transparent,
-  //     end: Colors.black54,
-  //   );
-  // }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   _scrimColorTween = _buildScrimColorTween();
-  //   return BlockSemantics(
-  //     // 背景の要素を操作できないようにする
-  //     child: ExcludeSemantics(
-  //       // スクリーンリーダーにアクセス不可能になるように
-  //       excluding: false, // スクリーンリーダーにアクセス不可能になるように
-  //       child: GestureDetector(
-  //         onTap: close,
-  //         child: Semantics(
-  //           // アクセシビリティを可能にする
-  //           // 視覚障害アクセシビリティ
-  //           label: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-  //           child: Container(
-  //             // The drawer's "scrim"
-  //             color: _scrimColorTween.evaluate(_controller),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
 
 class MenuBlock extends StatelessWidget {
@@ -252,6 +213,7 @@ class MenuBlock extends StatelessWidget {
         //     overlayColor: MaterialStateProperty.all(kGray400)),
         onTap: onPressed,
         child: Container(
+          decoration: BoxDecoration(color: kWhite),
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           child: Row(children: [
             Icon(
