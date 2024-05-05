@@ -124,9 +124,19 @@ class Menu extends HookConsumerWidget {
                                   icon: LineIcons.penFancy,
                                   text: "メモを編集",
                                   onPressed: () {
-                                    ref
-                                        .read(isMenuOpenProvider.notifier)
-                                        .state = true;
+                                    isVisible.value = false;
+                                    Timer(
+                                      duration,
+                                      () => ref
+                                          .read(isMenuOpenProvider.notifier)
+                                          .state = false,
+                                    );
+                                    Timer(
+                                        duration,
+                                        () => ref
+                                            .read(isRenameMemoModalOpenProvider
+                                                .notifier)
+                                            .state = true);
                                   },
                                 ),
                                 MenuBlock(

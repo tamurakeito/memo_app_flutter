@@ -2,7 +2,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:memo_app_flutter/types/type.dart';
 
 final isMenuOpenProvider = StateProvider<bool>((ref) => false);
-final isTopModalOpenProvider = StateProvider<bool>((ref) => false);
+final isAddTaskModalOpenProvider = StateProvider<bool>((ref) => false);
+final isRenameMemoModalOpenProvider = StateProvider<bool>((ref) => false);
 final isBottomModalOpenProvider = StateProvider<bool>((ref) => false);
 
 final memoProvider = StateProvider<MemoSummaryType?>((ref) => null);

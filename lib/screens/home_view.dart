@@ -8,6 +8,7 @@ import 'package:memo_app_flutter/components/bottom_modal.dart';
 import 'package:memo_app_flutter/components/menu.dart';
 import 'package:memo_app_flutter/components/navigation.dart';
 import 'package:memo_app_flutter/components/remove_memo_modal.dart';
+import 'package:memo_app_flutter/components/rename_memo_modal.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
 import 'package:memo_app_flutter/components/skeleton_top_bar.dart';
 import 'package:memo_app_flutter/components/top_bar.dart';
@@ -30,7 +31,7 @@ class HomeView extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isMenuOpen = ref.watch(isMenuOpenProvider);
-    final isTopModalOpen = ref.watch(isTopModalOpenProvider);
+    final isTopModalOpen = ref.watch(isAddTaskModalOpenProvider);
     final isBottomModalOpen = ref.watch(isBottomModalOpenProvider);
 
     final isLoading = ref.watch(isLoadingProvider);
@@ -61,7 +62,7 @@ class HomeView extends HookConsumerWidget {
               if (!isMenuOpen && !isTopModalOpen && !isBottomModalOpen) {
                 if (details.delta.dy > 0) {
                   // 下方向にスワイプ
-                  ref.read(isTopModalOpenProvider.notifier).state = true;
+                  ref.read(isAddTaskModalOpenProvider.notifier).state = true;
                 }
                 if (details.delta.dy < 0) {
                   // 上方向にスワイプ
@@ -87,6 +88,7 @@ class HomeView extends HookConsumerWidget {
           ),
           const Menu(),
           AddTaskModal(),
+          RenameMemoModal(),
           RemoveMemoModal(),
         ],
       ),

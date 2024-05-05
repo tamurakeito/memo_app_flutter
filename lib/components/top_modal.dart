@@ -17,21 +17,25 @@ class TopModal extends HookConsumerWidget {
   final IconData visualIcon;
   final IconData execIcon;
   final TextEditingController textController;
+  // final bool isOpen;
+  final StateProvider<bool> isOpenProvider;
   final Future<void> Function() onPressedExec;
   // final Widget child;
-  const TopModal(
-      {super.key,
-      required this.placeholder,
-      required this.visualIcon,
-      required this.execIcon,
-      required this.textController,
-      required this.onPressedExec});
+  const TopModal({
+    super.key,
+    required this.placeholder,
+    required this.visualIcon,
+    required this.execIcon,
+    required this.textController,
+    required this.onPressedExec,
+    required this.isOpenProvider,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final double topPadding = MediaQuery.of(context).padding.top;
+    final isOpen = ref.watch(isOpenProvider);
 
-    final isOpen = ref.watch(isTopModalOpenProvider);
     final isVisible = useState<bool>(false);
     final duration = 100;
 
@@ -69,7 +73,7 @@ class TopModal extends HookConsumerWidget {
     ));
 
     void handleClose() {
-      ref.read(isTopModalOpenProvider.notifier).state = false;
+      ref.read(isOpenProvider.notifier).state = false;
     }
 
     final page = ref.watch(memoPageProvider);
@@ -79,18 +83,9 @@ class TopModal extends HookConsumerWidget {
       if (textController.text != '') {
         isVisible.value = false;
         Timer(Duration(milliseconds: duration), () {
-          ref.read(isTopModalOpenProvider.notifier).state = false;
+          ref.read(isOpenProvider.notifier).state = false;
         });
         await onPressedExec();
-        // await Future.delayed(Duration(milliseconds: 750));
-        // ref.read(updateFlagProvider.notifier).state = true;
-        // await Future.delayed(Duration(milliseconds: duration));
-        // ref.read(updateFlagProvider.notifier).state = false;
-
-        await Future.delayed(Duration(milliseconds: 750));
-        ref.read(isLoadingProvider.notifier).state = true;
-        await fetchMemoDetail(ref, page, memo!.id);
-        ref.read(isLoadingProvider.notifier).state = false;
       }
     }
 

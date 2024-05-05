@@ -8,6 +8,7 @@ import 'package:memo_app_flutter/data/api/post_add_task.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 import 'package:line_icons/line_icons.dart';
 
@@ -18,14 +19,22 @@ class AddTaskModal extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final TextEditingController controller = useTextEditingController();
     final MemoSummaryType? memo = ref.watch(memoProvider);
+    final page = ref.watch(memoPageProvider);
 
     Future<void> handleExec() async {
       final TaskType data = TaskType(
-          id: 0, name: controller.text, memoId: memo!.id, complete: false);
+        id: 0,
+        name: controller.text,
+        memoId: memo!.id,
+        complete: false,
+      );
       postAddTask(data).catchError((error) {
         print("Error fetching data5: $error");
-      }).whenComplete(() {
+      }).whenComplete(() async {
         controller.text = "";
+        ref.read(isLoadingProvider.notifier).state = true;
+        await fetchMemoDetail(ref, page, memo!.id);
+        ref.read(isLoadingProvider.notifier).state = false;
       });
     }
 
@@ -35,6 +44,7 @@ class AddTaskModal extends HookConsumerWidget {
       execIcon: LineIcons.plus,
       textController: controller,
       onPressedExec: handleExec,
+      isOpenProvider: isAddTaskModalOpenProvider,
     );
   }
 }
