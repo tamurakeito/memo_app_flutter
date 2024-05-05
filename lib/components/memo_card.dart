@@ -80,10 +80,15 @@ class MemoCard extends HookConsumerWidget {
       }
     }, [memoPro]);
 
+    final isOnTap = useState(false);
+
     return Stack(
       children: [
         NotificationListener<ScrollNotification>(
           onNotification: (notification) {
+            if (notification is ScrollStartNotification) {
+              isOnTap.value = true;
+            }
             if (notification.metrics.pixels < -100 &&
                 isLoadable.value == false) {
               isLoadable.value = true;
@@ -92,18 +97,21 @@ class MemoCard extends HookConsumerWidget {
                 isLoadable.value == true) {
               isSyncActive.value = false;
             }
-            if (notification is ScrollEndNotification &&
-                isLoadable.value == true) {
-              fetch();
-              isLoadable.value = false;
+            if (notification is ScrollEndNotification) {
+              print('end');
+              isOnTap.value = false;
+              if (isLoadable.value == true) {
+                fetch();
+                isLoadable.value = false;
+              }
             }
             return false;
           },
           child: SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
             child: Container(
-              constraints:
-                  BoxConstraints(minHeight: screenHeight(context) - 160),
+              constraints: BoxConstraints(
+                  minHeight: isOnTap.value ? screenHeight(context) - 160 : 0),
               child: !isLoading.value && memo.value.name != nullMemo.name
                   ? MemoLayout(memo: memo)
                   : SkeletonMemoCard(),
@@ -243,6 +251,9 @@ class MemoLayout extends HookWidget {
               ],
             ),
           ),
+        // Container(
+        //   decoration: BoxDecoration(color: Colors.pink),
+        // ),
       ],
     );
   }
