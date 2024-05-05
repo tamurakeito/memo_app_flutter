@@ -20,6 +20,8 @@ class Swiper extends HookConsumerWidget {
 
     final isSwipeFlag = useState<bool>(false);
 
+    final memo = ref.watch(memoProvider);
+
     useEffect(() {
       // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
       int turnedPage = page;
@@ -33,10 +35,12 @@ class Swiper extends HookConsumerWidget {
       });
       // memoProviderにセット
       Timer(
-        Duration.zero,
-        () => ref.read(memoProvider.notifier).state = list.length > page
-            ? list[page]
-            : MemoSummaryType(id: 0, name: '', tag: false, length: 0),
+        Duration(milliseconds: 1),
+        () {
+          ref.read(memoProvider.notifier).state = list.length > page
+              ? list[page]
+              : MemoSummaryType(id: 0, name: '', tag: false, length: 0);
+        },
       );
       return () {};
     }, [page]);

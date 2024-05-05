@@ -39,12 +39,11 @@ class HomeView extends HookConsumerWidget {
     Future<void> fetch() async {
       final List<MemoSummaryType> sortedList = await fetchMemoSummaries(ref);
       final ClientData clientData = await getClientData();
-      ref.read(memoPageProvider.notifier).state = clientData.tab;
-      print(sortedList.length);
+      final int tab = clientData.tab;
+      ref.read(memoPageProvider.notifier).state = tab;
 
-      if (sortedList.isNotEmpty && sortedList.length > clientData.tab) {
-        ref.read(memoProvider.notifier).state = sortedList[clientData.tab];
-        fetchMemoDetail(ref, clientData.tab, sortedList[clientData.tab].id);
+      if (sortedList.isNotEmpty && sortedList.length > tab) {
+        fetchMemoDetail(ref, tab, sortedList[tab].id, tab);
       }
     }
 

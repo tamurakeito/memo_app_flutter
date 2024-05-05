@@ -5,17 +5,20 @@ import 'package:memo_app_flutter/data/api/get_memo_summary.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 
-Future<MemoDetailType> fetchMemoDetail(WidgetRef ref, int index, int id) async {
+Future<MemoDetailType> fetchMemoDetail(
+    WidgetRef ref, int index, int id, int page) async {
   MemoDetailType? memo;
   await getMemoDetail(id).then((data) {
     memo = data;
     ref.read(memoDetailsProvider.notifier).state[index] = data;
-    ref.read(memoProvider.notifier).state = MemoSummaryType(
-      id: data.id,
-      name: data.name,
-      tag: data.tag,
-      length: data.tasks.length,
-    );
+    if (page == index) {
+      ref.read(memoProvider.notifier).state = MemoSummaryType(
+        id: data.id,
+        name: data.name,
+        tag: data.tag,
+        length: data.tasks.length,
+      );
+    }
   }).catchError((error) {
     print("Error fetching data1: $error");
   });

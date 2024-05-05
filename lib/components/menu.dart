@@ -44,7 +44,7 @@ class Menu extends HookConsumerWidget {
       memo.tasks.forEach((task) {
         handleOperation(task);
       });
-      await fetchMemoDetail(ref, page, memo.id);
+      await fetchMemoDetail(ref, page, memo.id, page);
       ref.read(isLoadingProvider.notifier).state = false;
     }
 

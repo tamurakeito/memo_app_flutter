@@ -48,7 +48,7 @@ class MemoCard extends HookConsumerWidget {
 
     Future<void> fetch() async {
       isLoading.value = true;
-      MemoDetailType fetchMemo = await fetchMemoDetail(ref, index, id);
+      MemoDetailType fetchMemo = await fetchMemoDetail(ref, index, id, page);
       memo.value = fetchMemo;
       isLoaded.value = true;
       isLoading.value = false;
@@ -309,7 +309,8 @@ class ListBlock extends HookConsumerWidget {
                       memoId: task.memoId,
                       complete: true);
                   await putRestatusTask(data);
-                  memo.value = await fetchMemoDetail(ref, page, task.memoId);
+                  memo.value =
+                      await fetchMemoDetail(ref, page, task.memoId, page);
                   isLoading.value = false;
                 },
                 child: !isLoading.value
@@ -324,7 +325,8 @@ class ListBlock extends HookConsumerWidget {
                 onPressed: () async {
                   isLoading.value = true;
                   await deleteTask(task.id);
-                  memo.value = await fetchMemoDetail(ref, page, task.memoId);
+                  memo.value =
+                      await fetchMemoDetail(ref, page, task.memoId, page);
                   isLoading.value = false;
                 },
                 child: !isLoading.value
