@@ -49,6 +49,7 @@ const Color kWhiteSoft = kGray400;
 const Color kWhiteHover = kGray300;
 // other
 const Color kScrimColor = Color(0x8A000000);
+const Color kTransplant = Color.fromRGBO(0, 0, 0, 0);
 
 /// Layout
 double screenHeight(BuildContext context) {

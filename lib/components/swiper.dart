@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -97,11 +99,12 @@ class SwiperPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final double height = screenHeight(context) - 160;
     const int durationTime = 200;
     final Duration duration = Duration(milliseconds: durationTime);
 
     final page = ref.watch(memoPageProvider);
+    final list = ref.watch(memoSummariesProvider);
 
     final position = useState<double>(0);
     if (index < page) {
@@ -126,9 +129,42 @@ class SwiperPage extends HookConsumerWidget {
       duration: duration,
       curve: Curves.easeInOut,
       transform: Matrix4.translationValues(position.value, 0, 0),
-      color: kWhite,
-      height: screenHeight - 160,
-      child: child,
+      height: height,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () {
+                if (page < list.length - 1) {
+                  ref.read(memoPageProvider.notifier).state = page + 1;
+                }
+              },
+              child: Container(
+                color: kTransplant,
+                width: 100,
+                height: height,
+              ),
+            ),
+          ),
+          child,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: () {
+                if (page > 0) {
+                  ref.read(memoPageProvider.notifier).state = page - 1;
+                }
+              },
+              child: Container(
+                color: kTransplant,
+                width: 100,
+                height: height,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
