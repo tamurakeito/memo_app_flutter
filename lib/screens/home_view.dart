@@ -54,6 +54,7 @@ class HomeView extends HookConsumerWidget {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: kWhite,
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           GestureDetector(
