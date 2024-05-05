@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  # flutter_riverpod: ^2.4.10
   flutter_hooks: ^0.20.5
   hooks_riverpod: ^2.4.10
   riverpod_annotation: ^2.3.4
@@ -19,6 +18,7 @@ dependencies:
   flutter_feather_icons: ^2.0.0+1
   shimmer: ^3.0.0
   http: ^1.2.1
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -33,3 +33,8 @@ flutter:
         - asset: assets/fonts/NotoSansCJKjp-Regular.otf
         - asset: assets/fonts/NotoSansCJKjp-Bold.otf
           weight: 700
+
+flutter_icons:       
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
