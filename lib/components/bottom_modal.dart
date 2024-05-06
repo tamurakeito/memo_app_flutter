@@ -118,6 +118,7 @@ class BottomModal extends HookConsumerWidget {
                 BarrierScrim(
                   isActive: isVisible,
                   onTap: handleClose,
+                  onDragDown: handleClose,
                 ),
                 Column(
                   children: [

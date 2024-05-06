@@ -64,21 +64,24 @@ class Swiper extends HookConsumerWidget {
         // ページが捲られたときに一定時間そのページにとどまっていた場合そのページをClientDataとしてサーバーへ送信する
       },
       onHorizontalDragEnd: (details) {},
-      child: Stack(
-        children: list.asMap().entries.expand<Widget>((entry) {
-          int index = entry.key;
-          MemoSummaryType memo = entry.value;
-          return [
-            SwiperPage(
-              index: index,
-              isActive: false,
-              child: MemoCard(
+      child: Container(
+        color: kTransplant,
+        child: Stack(
+          children: list.asMap().entries.expand<Widget>((entry) {
+            int index = entry.key;
+            MemoSummaryType memo = entry.value;
+            return [
+              SwiperPage(
                 index: index,
-                id: memo.id,
-              ),
-            )
-          ];
-        }).toList(),
+                isActive: false,
+                child: MemoCard(
+                  index: index,
+                  id: memo.id,
+                ),
+              )
+            ];
+          }).toList(),
+        ),
       ),
     );
   }
