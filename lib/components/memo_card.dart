@@ -108,10 +108,13 @@ class MemoCard extends HookConsumerWidget {
             return false;
           },
           child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
+            physics: memo.value.tasks.isNotEmpty
+                ? AlwaysScrollableScrollPhysics()
+                : NeverScrollableScrollPhysics(),
             child: Container(
               constraints: BoxConstraints(
-                  minHeight: isOnTap.value ? screenHeight(context) - 160 : 0),
+                minHeight: isOnTap.value ? screenHeight(context) - 160 : 0,
+              ),
               child: !isLoading.value && memo.value.name != nullMemo.name
                   ? MemoLayout(memo: memo)
                   : SkeletonMemoCard(),
