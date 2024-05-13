@@ -102,6 +102,10 @@ class TopModal extends HookConsumerWidget {
                   handleClose();
                   textController.text = '';
                 },
+                onDragDown: () {
+                  handleClose();
+                  textController.text = '';
+                },
               ),
               SlideTransition(
                 position: animation,
