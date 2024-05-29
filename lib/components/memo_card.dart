@@ -18,10 +18,12 @@ import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/ui/molecules/uri_text.dart';
 import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
 import 'package:memo_app_flutter/ui/molecules/loading_circle_mini.dart';
 import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MemoCard extends HookConsumerWidget {
   final int index;
@@ -167,7 +169,7 @@ class MemoLayout extends HookWidget {
             ? Container(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Column(
-                  children: [...uncompleteList],
+                  children: uncompleteList,
                 ))
             : SizedBox(
                 height: 5,
@@ -292,6 +294,8 @@ class ListBlock extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = useState(false);
     final page = ref.watch(memoPageProvider);
+    final bool isUri = isValidUri(task.name);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
       child: Row(children: [
@@ -307,11 +311,15 @@ class ListBlock extends HookConsumerWidget {
         const SizedBox(
           width: 16,
         ),
-        AtomicText(
-          task.name,
-          style: AtomicTextStyle.md,
-          type: !task.complete ? AtomicTextColor.dark : AtomicTextColor.light,
-        ),
+        !isUri
+            ? AtomicText(
+                task.name,
+                style: AtomicTextStyle.md,
+                type: !task.complete
+                    ? AtomicTextColor.dark
+                    : AtomicTextColor.light,
+              )
+            : UriModule(task.name),
         const Spacer(),
         !task.complete
             ? Button(
