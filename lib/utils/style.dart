@@ -52,6 +52,10 @@ const Color kScrimColor = Color(0x8A000000);
 const Color kTransplant = Color.fromRGBO(0, 0, 0, 0);
 
 /// Layout
+double screenWidth(BuildContext context) {
+  return MediaQuery.of(context).size.width;
+}
+
 double screenHeight(BuildContext context) {
   return MediaQuery.of(context).size.height;
 }
