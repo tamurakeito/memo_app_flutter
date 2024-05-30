@@ -29,8 +29,8 @@ Future<List<MemoSummaryType>> fetchMemoSummaries(WidgetRef ref) async {
   try {
     final summaries = await getMemoSummary();
     final sortedList = [
-      ...summaries.where((element) => element.tag),
-      ...summaries.where((element) => !element.tag),
+      ...summaries.where((element) => element.tag).toList().reversed,
+      ...summaries.where((element) => !element.tag).toList().reversed,
     ];
     ref.read(memoSummariesProvider.notifier).state = sortedList;
     setMemoDetails(ref, sortedList);
