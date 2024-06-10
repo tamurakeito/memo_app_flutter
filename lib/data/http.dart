@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 clientRequest(String path,
     {String method = 'GET', Map<String, dynamic>? data}) {
-  var uri = Uri.parse('http://35.233.218.140$path');
+  var uri = Uri.parse('http://34.19.93.10:8080$path');
   switch (method.toUpperCase()) {
     case 'POST':
       return http.post(uri,

@@ -104,6 +104,9 @@ class MemoListBox extends HookWidget {
             MemoDetailType(id: 0, name: value, tag: false, tasks: []);
         await postAddMemo(data);
         fetchNewMemoSummaries(homeRef!);
+        // final List<MemoSummaryType> summaries =
+        //     await fetchMemoSummaries(homeRef!);
+        // final int index = summaries.indexWhere((summary)=>summary.name);
         await Future.delayed(Duration(milliseconds: 1));
       }
       Navigator.pop(context);

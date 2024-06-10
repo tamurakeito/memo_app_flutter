@@ -98,8 +98,9 @@ class BottomModal extends HookConsumerWidget {
       isVisible.value = false;
       deleteController.reset();
       movePosition.value = 0;
-      await deleteMemo(memo!.id);
-      fetchNewMemoSummaries(ref);
+      // await deleteMemo(memo!.id);
+      // fetchNewMemoSummaries(ref);
+      await fetchMemoSummaries(ref);
     };
 
     void Function() handleCancel = () => {
