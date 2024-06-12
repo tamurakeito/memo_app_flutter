@@ -10,6 +10,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
+import 'package:memo_app_flutter/components/toast.dart';
 import 'package:memo_app_flutter/data/api/delete_task.dart';
 import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/data/api/put_restatus_task.dart';
@@ -48,12 +49,20 @@ class MemoCard extends HookConsumerWidget {
     final memo = useState<MemoDetailType>(nullMemo);
     final memoPro = ref.watch(memoProvider);
 
+    final isConnected = ref.watch(isNetworkConnected);
+
     Future<void> fetch() async {
-      isLoading.value = true;
-      MemoDetailType fetchMemo = await fetchMemoDetail(ref, index, id, page);
-      memo.value = fetchMemo;
-      isLoaded.value = true;
-      isLoading.value = false;
+      if (isConnected) {
+        isLoading.value = true;
+        MemoDetailType fetchMemo = await fetchMemoDetail(ref, index, id, page);
+        memo.value = fetchMemo;
+        isLoaded.value = true;
+        isLoading.value = false;
+      } else {
+        isLoaded.value = false;
+        // Future.microtask(() => ref.read(toastProvider.notifier).state =
+        //     ToastType(true, 'ネットワークに接続されていません'));
+      }
     }
 
     useEffect(() {
@@ -100,7 +109,6 @@ class MemoCard extends HookConsumerWidget {
               isSyncActive.value = false;
             }
             if (notification is ScrollEndNotification) {
-              print('end');
               isOnTap.value = false;
               if (isLoadable.value == true) {
                 fetch();

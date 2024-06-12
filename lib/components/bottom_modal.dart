@@ -7,8 +7,11 @@ import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:memo_app_flutter/components/toast.dart';
 import 'package:memo_app_flutter/data/api/delete_memo.dart';
+import 'package:memo_app_flutter/data/api/post_add_memo.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
+import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/molecules/barrier_scrim.dart';
 import 'package:memo_app_flutter/utils/functions.dart';
@@ -98,9 +101,19 @@ class BottomModal extends HookConsumerWidget {
       isVisible.value = false;
       deleteController.reset();
       movePosition.value = 0;
-      // await deleteMemo(memo!.id);
-      // fetchNewMemoSummaries(ref);
-      await fetchMemoSummaries(ref);
+      List<MemoDetailType> details = ref.watch(memoDetailsProvider);
+      MemoDetailType deletedMemo = details[ref.watch(memoPageProvider)];
+      await deleteMemo(memo!.id);
+      fetchNewMemoSummaries(ref);
+      setToast(
+        ref,
+        '削除したメモを元に戻します',
+        duration: 5000,
+        onTap: () async {
+          await postAddMemo(deletedMemo);
+          fetchNewMemoSummaries(ref);
+        },
+      );
     };
 
     void Function() handleCancel = () => {

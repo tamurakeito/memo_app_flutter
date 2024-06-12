@@ -75,6 +75,13 @@ class TaskType {
       complete: json['complete'],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'memo_id': memoId,
+        'complete': complete,
+      };
 }
 
 class ClientData {

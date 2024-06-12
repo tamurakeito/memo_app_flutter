@@ -18,3 +18,5 @@ final memoDetailsProvider = StateProvider<List<MemoDetailType>>(
 final memoPageProvider = StateProvider<int>((ref) => 0);
 
 final isLoadingProvider = StateProvider<bool>((ref) => false);
+
+final isNetworkConnected = StateProvider<bool>((ref) => false);
