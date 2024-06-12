@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/components/toast.dart';
 import 'package:memo_app_flutter/data/api/delete_memo.dart';
@@ -95,6 +96,7 @@ class BottomModal extends HookConsumerWidget {
     final memo = ref.watch(memoProvider);
 
     void Function() handleSubmit = () async {
+      final deletePage = ref.read(memoPageProvider);
       deleteController.forward();
       await Future.delayed(Duration(milliseconds: duration));
       ref.read(isBottomModalOpenProvider.notifier).state = false;
@@ -104,14 +106,17 @@ class BottomModal extends HookConsumerWidget {
       List<MemoDetailType> details = ref.watch(memoDetailsProvider);
       MemoDetailType deletedMemo = details[ref.watch(memoPageProvider)];
       await deleteMemo(memo!.id);
-      fetchNewMemoSummaries(ref);
+      await fetchNewMemoSummaries(ref);
+      ref.read(memoPageProvider.notifier).state =
+          deletePage > 0 ? deletePage - 1 : 0;
       setToast(
         ref,
         '削除したメモを元に戻します',
         duration: 5000,
         onTap: () async {
           await postAddMemo(deletedMemo);
-          fetchNewMemoSummaries(ref);
+          await fetchNewMemoSummaries(ref);
+          ref.read(memoPageProvider.notifier).state = deletePage;
         },
       );
     };

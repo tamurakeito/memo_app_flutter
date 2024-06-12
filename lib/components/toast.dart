@@ -46,9 +46,11 @@ class Toast extends HookConsumerWidget {
     useEffect(() {
       if (toast.isActive) {
         controller.forward();
-        // Timer(Duration(milliseconds: toast.duration ?? 1000), () {
-        //   ref.read(toastProvider.notifier).state = ToastType(false, null);
-        // });
+        if (toast.duration != null) {
+          Timer(Duration(milliseconds: toast.duration!), () {
+            ref.read(toastProvider.notifier).state = ToastType(false, null);
+          });
+        }
       } else {
         controller.reverse();
       }
