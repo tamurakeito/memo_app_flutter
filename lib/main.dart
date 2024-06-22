@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/home_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,6 +16,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Memo App',
       debugShowCheckedModeBanner: false,
+      locale: const Locale('ja', ''), // 日本語ロケールを指定
+      supportedLocales: const [
+        Locale('en', ''), // 英語
+        Locale('ja', ''), // 日本語
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: HomeView(),
     );
   }
