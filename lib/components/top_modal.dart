@@ -39,13 +39,14 @@ class TopModal extends HookConsumerWidget {
     final isVisible = useState<bool>(false);
     final duration = 100;
 
-    FocusNode myFocusNode = FocusNode();
+    FocusNode myFocusNode = useFocusNode();
 
     useEffect(() {
       if (isOpen) {
         Timer(const Duration(milliseconds: 1), () => isVisible.value = true);
       }
-      myFocusNode.requestFocus();
+      Timer(const Duration(milliseconds: 50), () => myFocusNode.requestFocus());
+      return null;
     }, [isOpen]);
 
     // AnimationControllerをHookを使って作成
@@ -75,9 +76,6 @@ class TopModal extends HookConsumerWidget {
     void handleClose() {
       ref.read(isOpenProvider.notifier).state = false;
     }
-
-    final page = ref.watch(memoPageProvider);
-    final memo = ref.watch(memoProvider);
 
     Future<void> handlePressed() async {
       if (textController.text != '') {
@@ -128,6 +126,16 @@ class TopModal extends HookConsumerWidget {
                         Expanded(
                           child: TextField(
                             controller: textController,
+                            onChanged: (text) {
+                              // 全角スペースを半角スペースに置き換え
+                              textController.value =
+                                  textController.value.copyWith(
+                                text: text.replaceAll('　', ' '),
+                                selection: TextSelection.collapsed(
+                                    offset:
+                                        textController.selection.baseOffset),
+                              );
+                            },
                             onSubmitted: (_) {
                               handlePressed();
                             },
