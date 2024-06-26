@@ -150,14 +150,16 @@ class TopModal extends HookConsumerWidget {
                           child: TextField(
                             controller: textController,
                             onChanged: (text) {
-                              // 全角スペースを半角スペースに置き換え
-                              textController.value =
-                                  textController.value.copyWith(
-                                text: text.replaceAll('　', ' '),
-                                selection: TextSelection.collapsed(
-                                    offset:
-                                        textController.selection.baseOffset),
-                              );
+                              if (textController.value.composing.isCollapsed) {
+                                // 全角スペースを半角スペースに置き換え
+                                textController.value =
+                                    textController.value.copyWith(
+                                  text: text.replaceAll('　', ' '),
+                                  selection: TextSelection.collapsed(
+                                      offset:
+                                          textController.selection.baseOffset),
+                                );
+                              }
                             },
                             onSubmitted: (_) {
                               handlePressed();
