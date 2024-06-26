@@ -8,7 +8,6 @@ Future<MemoDetailType> getMemoDetail(int id) async {
 
   if (response.statusCode == 200) {
     dynamic jsonData = json.decode(response.body);
-    // jsonDataをMemoSummaryのリストに変換
     MemoDetailType memo = MemoDetailType.fromJson(jsonData);
     return memo;
   } else {

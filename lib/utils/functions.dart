@@ -56,11 +56,12 @@ void setMemoDetails(WidgetRef ref, List<MemoSummaryType> sortedList) {
   }
 }
 
-Future<void> fetchNewMemoSummaries(WidgetRef ref) async {
+Future<List<MemoSummaryType>?> fetchNewMemoSummaries(WidgetRef ref) async {
   try {
     final summaries = await fetchMemoSummaries(ref);
-    // ref.read(memoPageProvider.notifier).state = summaries.length - 1;
+    return summaries;
   } catch (error) {
     print("Error fetching data: $error");
+    return null;
   }
 }

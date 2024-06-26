@@ -81,7 +81,7 @@ class Navigation extends HookConsumerWidget {
   }
 }
 
-class MemoListBox extends HookWidget {
+class MemoListBox extends HookConsumerWidget {
   final bool isTagged;
   final List<MemoListBlock> memoList;
   final ValueNotifier<bool>? isAddMemo;
@@ -97,16 +97,22 @@ class MemoListBox extends HookWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Future<void> handleExec(String value) async {
       if (value != '') {
         MemoDetailType data =
             MemoDetailType(id: 0, name: value, tag: false, tasks: []);
-        await postAddMemo(data);
-        fetchNewMemoSummaries(homeRef!);
-        // final List<MemoSummaryType> summaries =
-        //     await fetchMemoSummaries(homeRef!);
-        // final int index = summaries.indexWhere((summary)=>summary.name);
+        await postAddMemo(data).then((data) async {
+          final List<MemoSummaryType>? summaries =
+              await fetchNewMemoSummaries(homeRef!);
+          if (summaries != null) {
+            final int index =
+                summaries.indexWhere((summary) => summary.id == data!.id);
+            ref.read(memoPageProvider.notifier).state = index;
+          }
+        }).catchError((error) {
+          print("Error fetching data: $error");
+        });
         await Future.delayed(Duration(milliseconds: 1));
       }
       Navigator.pop(context);
