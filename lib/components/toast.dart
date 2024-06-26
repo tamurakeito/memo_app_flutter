@@ -11,17 +11,19 @@ class ToastType {
   String? message;
   int? duration;
   void Function()? onTap;
+  bool isBelow;
 
-  ToastType(this.isActive, this.message, {this.duration, this.onTap});
+  ToastType(this.isActive, this.message,
+      {this.duration, this.onTap, this.isBelow = false});
 }
 
 final toastProvider = StateProvider<ToastType>((ref) => ToastType(false, null));
 
 void setToast(WidgetRef ref, String message,
-    {int? duration, void Function()? onTap}) {
+    {int? duration, void Function()? onTap, bool? isBelow}) {
   Future.microtask(() {
-    ref.read(toastProvider.notifier).state =
-        ToastType(true, message, duration: duration, onTap: onTap);
+    ref.read(toastProvider.notifier).state = ToastType(true, message,
+        duration: duration, onTap: onTap, isBelow: isBelow ?? false);
   });
 }
 
@@ -75,11 +77,15 @@ class Toast extends HookConsumerWidget {
             onVerticalDragUpdate: (details) {
               if (details.delta.dy < 0) {
                 // 上方向へスワイプ
-                controller.reverse();
+                ref.read(toastProvider.notifier).state = ToastType(false, null);
               }
             },
             child: Container(
-              margin: EdgeInsets.only(left: 15, right: 15, top: 60, bottom: 50),
+              margin: EdgeInsets.only(
+                  left: 15,
+                  right: 15,
+                  top: !toast.isBelow ? 60 : 120,
+                  bottom: 50),
               decoration: BoxDecoration(
                 color: Color.fromRGBO(0, 0, 0, 0.7),
                 borderRadius: BorderRadius.circular(5),

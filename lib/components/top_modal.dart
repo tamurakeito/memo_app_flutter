@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart';
+import 'package:memo_app_flutter/components/toast.dart';
 import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
@@ -35,17 +38,37 @@ class TopModal extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final double topPadding = MediaQuery.of(context).padding.top;
     final isOpen = ref.watch(isOpenProvider);
-
     final isVisible = useState<bool>(false);
     final duration = 100;
 
     FocusNode myFocusNode = useFocusNode();
+
+    // final clipboardText = useState<String>('');
+    // Future<void> clipboardMonitoring() async {
+    //   final newClipboardText = await FlutterClipboard.paste();
+    //   print('txt1: ' + clipboardText.value);
+    //   print('txt2: ' + newClipboardText);
+    //   if (newClipboardText != '' && clipboardText.value != newClipboardText) {
+    //     clipboardText.value = newClipboardText;
+    //     setToast(ref, 'クリップボードからペースト', isBelow: true);
+    //   }
+    //   return;
+    // }
 
     useEffect(() {
       if (isOpen) {
         Timer(const Duration(milliseconds: 1), () => isVisible.value = true);
       }
       Timer(const Duration(milliseconds: 50), () => myFocusNode.requestFocus());
+
+      // if (isOpen) {
+      //   clipboardMonitoring();
+      // }
+      // Timer(
+      //   const Duration(milliseconds: 200),
+      //   () => ref.read(toastProvider.notifier).state = ToastType(false, null),
+      // );
+
       return null;
     }, [isOpen]);
 
