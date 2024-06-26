@@ -32,9 +32,9 @@ class AddTaskModal extends HookConsumerWidget {
         print("Error fetching data5: $error");
       }).whenComplete(() async {
         controller.text = "";
-        ref.read(isLoadingProvider.notifier).state = true;
+        // ref.read(isLoadingProvider.notifier).state = true;
         await fetchMemoDetail(ref, page, memo!.id, page);
-        ref.read(isLoadingProvider.notifier).state = false;
+        // ref.read(isLoadingProvider.notifier).state = false;
       });
     }
 
