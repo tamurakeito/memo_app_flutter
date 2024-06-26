@@ -3,12 +3,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/components/skeleton_navigation.dart';
 import 'package:memo_app_flutter/data/api/post_add_memo.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
+import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
 import 'package:memo_app_flutter/utils/functions.dart';
 import 'package:memo_app_flutter/utils/style.dart';
 
@@ -25,55 +27,108 @@ class Navigation extends HookConsumerWidget {
     useEffect(() {
       if (isAddMemo.value) myFocusNode.requestFocus();
     }, [isAddMemo.value]);
+
+    final isSyncActive = useState<bool>(false);
+    final isLoading = useState<bool>(false);
+    Future<void> fetch() async {
+      ref.read(isLoadingProvider.notifier).state = true;
+      isLoading.value = true;
+      await fetchMemoSummaries(ref).whenComplete(() {
+        ref.read(isLoadingProvider.notifier).state = false;
+        isLoading.value = false;
+      });
+    }
+
     return Drawer(
       child: Container(
         color: kWhite,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            Container(
-              height: 100,
-              decoration:
-                  const BoxDecoration(border: Border(bottom: AtomicBorder())),
+        child: Stack(
+          children: [
+            !isLoading.value
+                ? NotificationListener<ScrollNotification>(
+                    onNotification: (notification) {
+                      if (notification is ScrollStartNotification) {
+                        // isSyncActive.value = true;
+                      }
+                      if (notification.metrics.pixels < -50) {
+                        isSyncActive.value = true;
+                      } else if (notification.metrics.pixels > -50) {
+                        isSyncActive.value = false;
+                      }
+                      if (notification is ScrollEndNotification) {
+                        fetch();
+                      }
+                      return false;
+                    },
+                    child: SingleChildScrollView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 100),
+                        constraints: BoxConstraints(
+                          minHeight:
+                              screenHeight(context) - 100, // Containerの最小高さを設定
+                        ),
+                        decoration: const BoxDecoration(
+                            border: Border(top: AtomicBorder())),
+                        child: Column(
+                          children: [
+                            MemoListBox(
+                              isTagged: true,
+                              memoList: list
+                                  .where((element) => element.tag)
+                                  .toList()
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
+                                int index = entry.key;
+                                MemoSummaryType memo = entry.value;
+                                return MemoListBlock(
+                                  text: memo.name,
+                                  length: memo.length,
+                                  isFocused: page == index && !isAddMemo.value,
+                                  jumpPage: index,
+                                );
+                              }).toList(),
+                            ),
+                            MemoListBox(
+                              isTagged: false,
+                              memoList: list
+                                  .where((memo) => !memo.tag)
+                                  .toList()
+                                  .asMap()
+                                  .entries
+                                  .map(
+                                (entry) {
+                                  int index = entry.key +
+                                      list
+                                          .where((element) => element.tag)
+                                          .length;
+                                  MemoSummaryType memo = entry.value;
+                                  return MemoListBlock(
+                                    text: memo.name,
+                                    length: memo.length,
+                                    isFocused:
+                                        page == index && !isAddMemo.value,
+                                    jumpPage: index,
+                                  );
+                                },
+                              ).toList(),
+                              isAddMemo: isAddMemo,
+                              myFocusNode: myFocusNode,
+                              homeRef: homeRef,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                : SkeletonNavigation(),
+            Padding(
+              padding: EdgeInsets.only(top: 75),
+              child: LoadingCircle(
+                isActive: isSyncActive.value,
+              ),
             ),
-            MemoListBox(
-              isTagged: true,
-              memoList: list
-                  .where((element) => element.tag)
-                  .toList()
-                  .asMap()
-                  .entries
-                  .map((entry) {
-                int index = entry.key;
-                MemoSummaryType memo = entry.value;
-                return MemoListBlock(
-                  text: memo.name,
-                  length: memo.length,
-                  isFocused: page == index && !isAddMemo.value,
-                  jumpPage: index,
-                );
-              }).toList(),
-            ),
-            MemoListBox(
-              isTagged: false,
-              memoList:
-                  list.where((memo) => !memo.tag).toList().asMap().entries.map(
-                (entry) {
-                  int index =
-                      entry.key + list.where((element) => element.tag).length;
-                  MemoSummaryType memo = entry.value;
-                  return MemoListBlock(
-                    text: memo.name,
-                    length: memo.length,
-                    isFocused: page == index && !isAddMemo.value,
-                    jumpPage: index,
-                  );
-                },
-              ).toList(),
-              isAddMemo: isAddMemo,
-              myFocusNode: myFocusNode,
-              homeRef: homeRef,
-            )
           ],
         ),
       ),

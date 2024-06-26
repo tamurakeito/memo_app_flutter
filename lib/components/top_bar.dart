@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_top_bar.dart';
-import 'package:memo_app_flutter/data/api/get_memo_summary.dart';
 import 'package:memo_app_flutter/data/api/put_restatus_memo.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
@@ -21,9 +20,6 @@ class TopBar extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isOpen = ref.watch(isMenuOpenProvider);
-    final isTagged = useState<bool>(false);
-    final int page = ref.watch(memoPageProvider);
     final MemoSummaryType? memo = ref.watch(memoProvider);
 
     final isLoading = useState(false);
