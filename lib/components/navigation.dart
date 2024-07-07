@@ -173,6 +173,8 @@ class MemoListBox extends HookConsumerWidget {
       Navigator.pop(context);
     }
 
+    final TextEditingController textController = useTextEditingController();
+
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 12, 0, 18),
       child: Column(
@@ -224,6 +226,17 @@ class MemoListBox extends HookConsumerWidget {
                   ),
                   Expanded(
                     child: TextField(
+                      controller: textController,
+                      onChanged: (text) {
+                        if (textController.value.composing.isCollapsed) {
+                          // 全角スペースを半角スペースに置き換え
+                          textController.value = textController.value.copyWith(
+                            text: text.replaceAll('　', ' '),
+                            selection: TextSelection.collapsed(
+                                offset: textController.selection.baseOffset),
+                          );
+                        }
+                      },
                       onSubmitted: (String value) {
                         handleExec(value);
                       },
