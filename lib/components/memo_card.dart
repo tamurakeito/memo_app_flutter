@@ -319,20 +319,26 @@ class ListBlock extends HookConsumerWidget {
         const SizedBox(
           width: 16,
         ),
-        Container(
-          width: screenWidth(context) - 100,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            // physics: ClampingScrollPhysics(),
-            child: !isUri
-                ? AtomicText(
-                    task.name,
-                    style: AtomicTextStyle.md,
-                    type: !task.complete
-                        ? AtomicTextColor.dark
-                        : AtomicTextColor.light,
-                  )
-                : UriModule(task.name),
+        GestureDetector(
+          onTap: () {
+            ref.read(taskProvider.notifier).state = task;
+            ref.read(isEditTaskModalOpenProvider.notifier).state = true;
+          },
+          child: Container(
+            width: screenWidth(context) - 100,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              // physics: ClampingScrollPhysics(),
+              child: !isUri
+                  ? AtomicText(
+                      task.name,
+                      style: AtomicTextStyle.md,
+                      type: !task.complete
+                          ? AtomicTextColor.dark
+                          : AtomicTextColor.light,
+                    )
+                  : UriModule(task.name),
+            ),
           ),
         ),
         const Spacer(),

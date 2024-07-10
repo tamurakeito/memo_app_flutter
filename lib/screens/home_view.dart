@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:memo_app_flutter/components/add_task_modal.dart';
 import 'package:memo_app_flutter/components/bottom_modal.dart';
+import 'package:memo_app_flutter/components/edit_task_modal.dart';
 import 'package:memo_app_flutter/components/menu.dart';
 import 'package:memo_app_flutter/components/navigation.dart';
 import 'package:memo_app_flutter/components/remove_memo_modal.dart';
@@ -106,6 +107,7 @@ class HomeView extends HookConsumerWidget {
           ),
           const Menu(),
           AddTaskModal(),
+          EditTaskModal(),
           RenameMemoModal(),
           RemoveMemoModal(),
           Toast(),
