@@ -20,5 +20,6 @@ final memoPageProvider = StateProvider<int>((ref) => 0);
 final taskProvider = StateProvider<TaskType?>((ref) => null);
 
 final isLoadingProvider = StateProvider<bool>((ref) => false);
+final isTaskLoadingProvider = StateProvider<bool>((ref) => false);
 
 final isNetworkConnected = StateProvider<bool>((ref) => false);

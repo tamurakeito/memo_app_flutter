@@ -139,12 +139,12 @@ class MemoCard extends HookConsumerWidget {
   }
 }
 
-class MemoLayout extends HookWidget {
+class MemoLayout extends HookConsumerWidget {
   final ValueNotifier<MemoDetailType> memo;
   const MemoLayout({super.key, required this.memo});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final uncompleteList = memo.value.tasks
         .where((element) => !element.complete)
         .map((task) => ListBlock(task: task, memo: memo))
@@ -167,6 +167,8 @@ class MemoLayout extends HookWidget {
       curve: Curves.easeInOut,
     ));
 
+    final isLoading = ref.watch(isTaskLoadingProvider);
+
     return Column(
       children: [
         TitleBlock(
@@ -177,7 +179,10 @@ class MemoLayout extends HookWidget {
             ? Container(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Column(
-                  children: uncompleteList,
+                  children: [
+                    ...uncompleteList,
+                    if (isLoading) const SkeletonListBlock(),
+                  ],
                 ))
             : SizedBox(
                 height: 5,
