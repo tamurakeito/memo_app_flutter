@@ -4,7 +4,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_navigation.dart';
+import 'package:memo_app_flutter/components/sortable_list.dart';
 import 'package:memo_app_flutter/data/api/post_add_memo.dart';
+import 'package:memo_app_flutter/data/api/put_memo_order_override.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
@@ -39,6 +41,19 @@ class Navigation extends HookConsumerWidget {
         isLoading.value = false;
       });
     }
+
+    final order = [
+      ...list
+          .where((element) => element.tag)
+          .toList()
+          .map((item) => item.id)
+          .toList(),
+      ...list
+          .where((element) => !element.tag)
+          .toList()
+          .map((item) => item.id)
+          .toList()
+    ];
 
     return Drawer(
       child: Container(
@@ -96,6 +111,7 @@ class Navigation extends HookConsumerWidget {
                                     jumpPage: index,
                                   );
                                 }).toList(),
+                                order: order,
                               ),
                               MemoListBox(
                                 isTagged: false,
@@ -104,25 +120,26 @@ class Navigation extends HookConsumerWidget {
                                     .toList()
                                     .asMap()
                                     .entries
-                                    .map(
-                                  (entry) {
-                                    int index = entry.key +
-                                        list
-                                            .where((element) => element.tag)
-                                            .length;
-                                    MemoSummaryType memo = entry.value;
-                                    return MemoListBlock(
-                                      text: memo.name,
-                                      length: memo.length,
-                                      isFocused:
-                                          page == index && !isAddMemo.value,
-                                      jumpPage: index,
-                                    );
-                                  },
-                                ).toList(),
+                                    .map((entry) {
+                                  int index = entry.key +
+                                      list
+                                          .where((element) => element.tag)
+                                          .length;
+                                  MemoSummaryType memo = entry.value;
+                                  return MemoListBlock(
+                                    text: memo.name,
+                                    length: memo.length,
+                                    isFocused:
+                                        page == index && !isAddMemo.value,
+                                    jumpPage: index,
+                                  );
+                                }).toList(),
                                 isAddMemo: isAddMemo,
                                 myFocusNode: myFocusNode,
                                 homeRef: homeRef,
+                                order: order,
+                                buffer:
+                                    list.where((element) => element.tag).length,
                               )
                             ],
                           ),
@@ -150,6 +167,8 @@ class MemoListBox extends HookConsumerWidget {
   final ValueNotifier<bool>? isAddMemo;
   final FocusNode? myFocusNode;
   final WidgetRef? homeRef;
+  final List<int> order;
+  final int? buffer;
   const MemoListBox({
     super.key,
     required this.isTagged,
@@ -157,6 +176,8 @@ class MemoListBox extends HookConsumerWidget {
     this.isAddMemo,
     this.myFocusNode,
     this.homeRef,
+    required this.order,
+    this.buffer,
   });
 
   @override
@@ -182,6 +203,14 @@ class MemoListBox extends HookConsumerWidget {
     }
 
     final TextEditingController textController = useTextEditingController();
+
+    Future<void> memoOrderOverride(List<int> data) async {
+      putMemoOrderOverride(data).catchError((error) {
+        print("Error fetching data: $error");
+      }).whenComplete(() async {
+        await fetchMemoSummaries(ref);
+      });
+    }
 
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 12, 0, 18),
@@ -266,7 +295,14 @@ class MemoListBox extends HookConsumerWidget {
                 ],
               ),
             ),
-          ...memoList
+          // ...memoList/
+          SortableList(
+            items: memoList,
+            height: 35,
+            order: order,
+            handler: memoOrderOverride,
+            buffer: buffer,
+          )
         ],
       ),
     );
@@ -289,26 +325,27 @@ class MemoListBlock extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Button(
-        onPressed: () {
-          Navigator.pop(context);
-          ref.read(memoPageProvider.notifier).state = jumpPage;
-        },
-        child: Container(
-          color: isFocused ? kGray200 : kWhite,
-          padding: const EdgeInsets.fromLTRB(23, 10, 23, 10),
-          child: Row(children: [
-            const AtomicCircle(
-              type: AtomicCircleType.gray,
-              radius: 6,
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            AtomicText(text,
-                style: AtomicTextStyle.h5, type: AtomicTextColor.dark),
-            const Spacer(),
-            AtomicText(length.toString(), style: AtomicTextStyle.sm)
-          ]),
-        ));
+      onPressed: () {
+        Navigator.pop(context);
+        ref.read(memoPageProvider.notifier).state = jumpPage;
+      },
+      child: Container(
+        color: isFocused ? kGray200 : kWhite,
+        padding: const EdgeInsets.fromLTRB(23, 10, 23, 10),
+        child: Row(children: [
+          const AtomicCircle(
+            type: AtomicCircleType.gray,
+            radius: 6,
+          ),
+          const SizedBox(
+            width: 16,
+          ),
+          AtomicText(text,
+              style: AtomicTextStyle.h5, type: AtomicTextColor.dark),
+          const Spacer(),
+          AtomicText(length.toString(), style: AtomicTextStyle.sm)
+        ]),
+      ),
+    );
   }
 }
