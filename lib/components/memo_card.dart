@@ -2,18 +2,18 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
+import 'package:memo_app_flutter/components/sortable_list.dart';
 import 'package:memo_app_flutter/components/toast.dart';
 import 'package:memo_app_flutter/data/api/delete_task.dart';
 import 'package:memo_app_flutter/data/api/get_memo_detail.dart';
 import 'package:memo_app_flutter/data/api/put_restatus_task.dart';
+import 'package:memo_app_flutter/data/api/put_task_order_override.dart';
 import 'package:memo_app_flutter/providers/providers.dart';
 import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
@@ -126,7 +126,10 @@ class MemoCard extends HookConsumerWidget {
                 minHeight: isOnTap.value ? screenHeight(context) - 160 : 0,
               ),
               child: !isLoading.value && memo.value.name != nullMemo.name
-                  ? MemoLayout(memo: memo)
+                  ? MemoLayout(
+                      memo: memo,
+                      page: page,
+                    )
                   : SkeletonMemoCard(),
             ),
           ),
@@ -141,7 +144,12 @@ class MemoCard extends HookConsumerWidget {
 
 class MemoLayout extends HookConsumerWidget {
   final ValueNotifier<MemoDetailType> memo;
-  const MemoLayout({super.key, required this.memo});
+  final int page;
+  const MemoLayout({
+    super.key,
+    required this.memo,
+    required this.page,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -169,6 +177,26 @@ class MemoLayout extends HookConsumerWidget {
 
     final isLoading = ref.watch(isTaskLoadingProvider);
 
+    final order = [
+      ...memo.value.tasks
+          .where((element) => !element.complete)
+          .map((item) => item.id)
+          .toList(),
+      ...memo.value.tasks
+          .where((element) => element.complete)
+          .map((item) => item.id)
+          .toList()
+    ];
+
+    Future<void> taskOrderOverride(List<int> data) async {
+      int id = memo.value.id;
+      putTaskOrderOverride(TaskOrder(id: id, order: data)).catchError((error) {
+        print("Error fetching data: $error");
+      }).whenComplete(() async {
+        await fetchMemoDetail(ref, page, id, page);
+      });
+    }
+
     return Column(
       children: [
         TitleBlock(
@@ -180,11 +208,17 @@ class MemoLayout extends HookConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Column(
                   children: [
-                    ...uncompleteList,
+                    // ...uncompleteList,
+                    SortableList(
+                      items: uncompleteList,
+                      height: 38,
+                      order: order,
+                      handler: taskOrderOverride,
+                    ),
                     if (isLoading) const SkeletonListBlock(),
                   ],
                 ))
-            : SizedBox(
+            : const SizedBox(
                 height: 5,
               ),
         // 完了済リスト
@@ -250,7 +284,7 @@ class MemoLayout extends HookConsumerWidget {
           Container(
             height: screenHeight(context) - 350,
             alignment: Alignment.center,
-            child: Column(
+            child: const Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
@@ -310,6 +344,7 @@ class ListBlock extends HookConsumerWidget {
     final bool isUri = isValidUri(task.name);
 
     return Container(
+      color: kWhite,
       padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
       child: Row(children: [
         !task.complete

@@ -84,6 +84,15 @@ class TaskType {
       };
 }
 
+class TaskOrder {
+  final int id;
+  final List<int> order;
+  TaskOrder({
+    required this.id,
+    required this.order,
+  });
+}
+
 class ClientData {
   final int tab;
   ClientData({

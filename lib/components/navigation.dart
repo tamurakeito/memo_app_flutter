@@ -204,11 +204,11 @@ class MemoListBox extends HookConsumerWidget {
 
     final TextEditingController textController = useTextEditingController();
 
+    int pageId = order[ref.read(memoPageProvider)];
     Future<void> memoOrderOverride(List<int> data) async {
-      putMemoOrderOverride(data).catchError((error) {
-        print("Error fetching data: $error");
-      }).whenComplete(() async {
+      putMemoOrderOverride(data).catchError((error) {}).whenComplete(() async {
         await fetchMemoSummaries(ref);
+        ref.read(memoPageProvider.notifier).state = data.indexOf(pageId);
       });
     }
 

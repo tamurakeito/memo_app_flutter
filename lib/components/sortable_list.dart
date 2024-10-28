@@ -32,6 +32,10 @@ class SortableList extends HookConsumerWidget {
     final position = useState<double>(0);
     final selectIndex = useState(0);
 
+    useEffect(() {
+      list.value = items;
+    }, [items]);
+
     Widget sortableItem(int index, Widget item) {
       return selectIndex.value == index && isDragging.value
           ? const SizedBox.shrink()
@@ -69,20 +73,20 @@ class SortableList extends HookConsumerWidget {
         }
       },
       onLongPressEnd: (LongPressEndDetails details) async {
-        isDragging.value = false;
-        int pageId = order[ref.watch(memoPageProvider)];
+        if (isDragging.value) {
+          isDragging.value = false;
 
-        int index = (position.value / height).floor();
-        int id = order.removeAt(selectIndex.value + (buffer ?? 0));
-        order.insert(index + (buffer ?? 0), id);
+          int index = (position.value / height).floor();
+          int id = order.removeAt(selectIndex.value + (buffer ?? 0));
+          order.insert(index + (buffer ?? 0), id);
 
-        List<Widget> itemsClone = items;
-        Widget item = itemsClone.removeAt(selectIndex.value);
-        itemsClone.insert(index, item);
-        list.value = itemsClone;
+          List<Widget> itemsClone = items;
+          Widget item = itemsClone.removeAt(selectIndex.value);
+          itemsClone.insert(index, item);
+          list.value = itemsClone;
 
-        handler(order);
-        ref.read(memoPageProvider.notifier).state = order.indexOf(pageId);
+          handler(order);
+        }
       },
       child: Stack(
         children: [
@@ -103,7 +107,11 @@ class SortableList extends HookConsumerWidget {
           ),
           isDragging.value
               ? Positioned(
-                  top: position.value - (height / 2),
+                  top: position.value < height / 2
+                      ? 0
+                      : position.value > height * (items.length - 1 / 2)
+                          ? height * (items.length - 1)
+                          : position.value - (height / 2),
                   left: 0,
                   right: 0,
                   child: items[selectIndex.value],
