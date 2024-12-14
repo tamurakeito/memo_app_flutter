@@ -217,7 +217,7 @@ class MemoListBox extends HookConsumerWidget {
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.fromLTRB(21, 10, 21, 10),
+            padding: const EdgeInsets.fromLTRB(21, 10, 17, 10),
             child: Row(
               children: [
                 Icon(
