@@ -332,19 +332,25 @@ class MemoListBlock extends ConsumerWidget {
       child: Container(
         color: isFocused ? kGray200 : kWhite,
         padding: const EdgeInsets.fromLTRB(23, 10, 23, 10),
-        child: Row(children: [
-          const AtomicCircle(
-            type: AtomicCircleType.gray,
-            radius: 6,
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          AtomicText(text,
-              style: AtomicTextStyle.h5, type: AtomicTextColor.dark),
-          const Spacer(),
-          AtomicText(length.toString(), style: AtomicTextStyle.sm)
-        ]),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const AtomicCircle(
+              type: AtomicCircleType.gray,
+              radius: 6,
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            SizedBox(
+              height: 12,
+              child: AtomicText(text,
+                  style: AtomicTextStyle.h5, type: AtomicTextColor.dark),
+            ),
+            const Spacer(),
+            AtomicText(length.toString(), style: AtomicTextStyle.sm)
+          ],
+        ),
       ),
     );
   }

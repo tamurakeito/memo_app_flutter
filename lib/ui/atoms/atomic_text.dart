@@ -70,10 +70,12 @@ class AtomicText extends StatelessWidget {
     ;
     return Text(data,
         style: TextStyle(
-            fontFamily: 'NotoSansJP',
-            fontSize: size,
-            fontWeight: weight,
-            color: color));
+          fontFamily: 'NotoSansJP',
+          fontSize: size,
+          fontWeight: weight,
+          height: 1.0,
+          color: color,
+        ));
   }
 }
 

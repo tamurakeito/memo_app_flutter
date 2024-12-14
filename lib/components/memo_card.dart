@@ -318,15 +318,21 @@ class TitleBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 12),
-      child: Row(children: [
-        const AtomicCircle(
-          type: AtomicCircleType.gray,
-        ),
-        const SizedBox(
-          width: 16,
-        ),
-        AtomicText(text, style: AtomicTextStyle.h2)
-      ]),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const AtomicCircle(
+            type: AtomicCircleType.gray,
+          ),
+          const SizedBox(
+            width: 16,
+          ),
+          SizedBox(
+            height: 18,
+            child: AtomicText(text, style: AtomicTextStyle.h2),
+          )
+        ],
+      ),
     );
   }
 }
@@ -345,83 +351,87 @@ class ListBlock extends HookConsumerWidget {
     return Container(
       color: kWhite,
       padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
-      child: Row(children: [
-        !task.complete
-            ? const AtomicCircle(
-                type: AtomicCircleType.white,
-              )
-            : const Icon(
-                Icons.check,
-                size: 18,
-                color: kGray500,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          !task.complete
+              ? const AtomicCircle(
+                  type: AtomicCircleType.white,
+                )
+              : const Icon(
+                  Icons.check,
+                  size: 18,
+                  color: kGray500,
+                ),
+          const SizedBox(
+            width: 16,
+          ),
+          GestureDetector(
+            onTap: () {
+              ref.read(taskProvider.notifier).state = task;
+              ref.read(isEditTaskModalOpenProvider.notifier).state = true;
+            },
+            child: SizedBox(
+              width: screenWidth(context) - 100,
+              height: 14,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                // physics: ClampingScrollPhysics(),
+                child: !isUri
+                    ? AtomicText(
+                        task.name,
+                        style: AtomicTextStyle.md,
+                        type: !task.complete
+                            ? AtomicTextColor.dark
+                            : AtomicTextColor.light,
+                      )
+                    : UriModule(task.name),
               ),
-        const SizedBox(
-          width: 16,
-        ),
-        GestureDetector(
-          onTap: () {
-            ref.read(taskProvider.notifier).state = task;
-            ref.read(isEditTaskModalOpenProvider.notifier).state = true;
-          },
-          child: Container(
-            width: screenWidth(context) - 100,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              // physics: ClampingScrollPhysics(),
-              child: !isUri
-                  ? AtomicText(
-                      task.name,
-                      style: AtomicTextStyle.md,
-                      type: !task.complete
-                          ? AtomicTextColor.dark
-                          : AtomicTextColor.light,
-                    )
-                  : UriModule(task.name),
             ),
           ),
-        ),
-        const Spacer(),
-        !task.complete
-            ? Button(
-                onPressed: () async {
-                  isLoading.value = true;
-                  final TaskType data = TaskType(
-                      id: task.id,
-                      name: task.name,
-                      memoId: task.memoId,
-                      complete: true);
-                  await putRestatusTask(data);
-                  memo.value =
-                      await fetchMemoDetail(ref, page, task.memoId, page);
-                  isLoading.value = false;
-                },
-                child: !isLoading.value
-                    ? const Icon(
-                        Icons.check,
-                        size: 18,
-                        color: kGray700,
-                      )
-                    : LoadingCircleMini(),
-              )
-            : Button(
-                onPressed: () async {
-                  isLoading.value = true;
-                  await deleteTask(task.id);
-                  memo.value =
-                      await fetchMemoDetail(ref, page, task.memoId, page);
-                  isLoading.value = false;
-                },
-                child: !isLoading.value
-                    ? const Icon(
-                        Icons.clear,
-                        size: 18,
-                        color: kGray500,
-                      )
-                    : LoadingCircleMini(
-                        type: LoadingCircleMiniColor.light,
-                      ),
-              ),
-      ]),
+          const Spacer(),
+          !task.complete
+              ? Button(
+                  onPressed: () async {
+                    isLoading.value = true;
+                    final TaskType data = TaskType(
+                        id: task.id,
+                        name: task.name,
+                        memoId: task.memoId,
+                        complete: true);
+                    await putRestatusTask(data);
+                    memo.value =
+                        await fetchMemoDetail(ref, page, task.memoId, page);
+                    isLoading.value = false;
+                  },
+                  child: !isLoading.value
+                      ? const Icon(
+                          Icons.check,
+                          size: 18,
+                          color: kGray700,
+                        )
+                      : LoadingCircleMini(),
+                )
+              : Button(
+                  onPressed: () async {
+                    isLoading.value = true;
+                    await deleteTask(task.id);
+                    memo.value =
+                        await fetchMemoDetail(ref, page, task.memoId, page);
+                    isLoading.value = false;
+                  },
+                  child: !isLoading.value
+                      ? const Icon(
+                          Icons.clear,
+                          size: 18,
+                          color: kGray500,
+                        )
+                      : LoadingCircleMini(
+                          type: LoadingCircleMiniColor.light,
+                        ),
+                ),
+        ],
+      ),
     );
   }
 }
