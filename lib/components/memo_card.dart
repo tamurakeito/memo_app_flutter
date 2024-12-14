@@ -208,14 +208,13 @@ class MemoLayout extends HookConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Column(
                   children: [
-                    // ...uncompleteList,
+                    if (isLoading) const SkeletonListBlock(),
                     SortableList(
                       items: uncompleteList,
                       height: 38,
                       order: order,
                       handler: taskOrderOverride,
                     ),
-                    if (isLoading) const SkeletonListBlock(),
                   ],
                 ))
             : const SizedBox(
