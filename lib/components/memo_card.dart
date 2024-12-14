@@ -202,13 +202,13 @@ class MemoLayout extends HookConsumerWidget {
         TitleBlock(
           text: memo.value.name,
         ),
+        if (isLoading) const SkeletonListBlock(),
         // 未完了リスト
         uncompleteList.isNotEmpty
             ? Container(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Column(
                   children: [
-                    if (isLoading) const SkeletonListBlock(),
                     SortableList(
                       items: uncompleteList,
                       height: 38,
@@ -279,7 +279,7 @@ class MemoLayout extends HookConsumerWidget {
             ],
           ),
         // リストが空配列のときの表示
-        if (memo.value.tasks.isEmpty)
+        if (memo.value.tasks.isEmpty && !isLoading)
           Container(
             height: screenHeight(context) - 350,
             alignment: Alignment.center,

@@ -1,10 +1,13 @@
 import 'dart:convert';
-
+import 'dart:async';
 import 'package:http/http.dart' as http;
 
-clientRequest(String path,
-    {String method = 'GET', Map<String, dynamic>? data}) {
+Future<http.Response> clientRequest(String path,
+    {String method = 'GET', Map<String, dynamic>? data}) async {
   var uri = Uri.parse('http://34.146.93.87:8080$path');
+
+  await Future.delayed(Duration(milliseconds: 500));
+
   switch (method.toUpperCase()) {
     case 'POST':
       return http.post(uri,
