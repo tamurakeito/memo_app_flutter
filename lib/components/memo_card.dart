@@ -19,7 +19,8 @@ import 'package:memo_app_flutter/types/type.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_circle.dart';
 import 'package:memo_app_flutter/ui/atoms/atomic_text.dart';
 import 'package:memo_app_flutter/ui/atoms/button.dart';
-import 'package:memo_app_flutter/ui/molecules/uri_text.dart';
+import 'package:memo_app_flutter/ui/molecules/phone_module.dart';
+import 'package:memo_app_flutter/ui/molecules/uri_module.dart';
 import 'package:memo_app_flutter/ui/molecules/loading_circle.dart';
 import 'package:memo_app_flutter/ui/molecules/loading_circle_mini.dart';
 import 'package:memo_app_flutter/utils/functions.dart';
@@ -347,6 +348,7 @@ class ListBlock extends HookConsumerWidget {
     final isLoading = useState(false);
     final page = ref.watch(memoPageProvider);
     final bool isUri = isValidUri(task.name);
+    final bool isPhoneNum = isValidPhoneNum(task.name);
 
     return Container(
       color: kWhite,
@@ -375,18 +377,19 @@ class ListBlock extends HookConsumerWidget {
               width: screenWidth(context) - 100,
               height: 14,
               child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                // physics: ClampingScrollPhysics(),
-                child: !isUri
-                    ? AtomicText(
-                        task.name,
-                        style: AtomicTextStyle.md,
-                        type: !task.complete
-                            ? AtomicTextColor.dark
-                            : AtomicTextColor.light,
-                      )
-                    : UriModule(task.name),
-              ),
+                  scrollDirection: Axis.horizontal,
+                  // physics: ClampingScrollPhysics(),
+                  child: isUri
+                      ? UriModule(task.name)
+                      : isPhoneNum
+                          ? PhoneModule(task.name)
+                          : AtomicText(
+                              task.name,
+                              style: AtomicTextStyle.md,
+                              type: !task.complete
+                                  ? AtomicTextColor.dark
+                                  : AtomicTextColor.light,
+                            )),
             ),
           ),
           const Spacer(),

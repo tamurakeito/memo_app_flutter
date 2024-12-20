@@ -23,15 +23,18 @@ class UriModule extends StatelessWidget {
       onTap: () {
         launchURL(Uri.parse(uri));
       },
-      child: Text(uri,
-          style: TextStyle(
-            fontFamily: 'NotoSansJP',
-            fontSize: kFontSizeTextMd,
-            fontWeight: FontWeight.normal,
-            color: kGray700,
-            decoration: TextDecoration.underline,
-            decorationColor: kGray600,
-          )),
+      child: Text(
+        uri,
+        style: TextStyle(
+          fontFamily: 'NotoSansJP',
+          fontSize: kFontSizeTextMd,
+          fontWeight: FontWeight.normal,
+          height: 1.0,
+          color: kGray700,
+          decoration: TextDecoration.underline,
+          decorationColor: kGray600,
+        ),
+      ),
     );
   }
 }
@@ -44,4 +47,9 @@ bool isValidUri(String uri) {
     // URIが無効な場合、例外が発生
     return false;
   }
+}
+
+bool isValidPhoneNum(String phoneNum) {
+  final phoneRegex = RegExp(r'^\+?[0-9\s\-()]+$');
+  return phoneRegex.hasMatch(phoneNum);
 }
