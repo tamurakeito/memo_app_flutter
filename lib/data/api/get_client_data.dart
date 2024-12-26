@@ -12,6 +12,6 @@ Future<ClientData> getClientData() async {
     ClientData data = ClientData.fromJson(jsonData);
     return data;
   } else {
-    throw Exception('Failed to load post');
+    return ClientData(tab: 0);
   }
 }

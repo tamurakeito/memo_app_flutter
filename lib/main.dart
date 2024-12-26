@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:memo_app_flutter/utils/local_storage.dart';
 import 'screens/home_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Flutterエンジンを初期化
+  final database = await initializeDatabase();
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

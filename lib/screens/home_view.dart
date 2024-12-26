@@ -1,12 +1,14 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_feather_icons/flutter_feather_icons.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart';
 import 'package:memo_app_flutter/components/add_task_modal.dart';
 import 'package:memo_app_flutter/components/bottom_modal.dart';
 import 'package:memo_app_flutter/components/edit_task_modal.dart';
+import 'package:memo_app_flutter/components/irregular_card.dart';
 import 'package:memo_app_flutter/components/menu.dart';
 import 'package:memo_app_flutter/components/navigation.dart';
 import 'package:memo_app_flutter/components/remove_memo_modal.dart';
@@ -32,6 +34,7 @@ class HomeView extends HookConsumerWidget {
     final isMenuOpen = ref.watch(isMenuOpenProvider);
     final isTopModalOpen = ref.watch(isAddTaskModalOpenProvider);
     final isBottomModalOpen = ref.watch(isBottomModalOpenProvider);
+    final List<MemoSummaryType> list = ref.watch(memoSummariesProvider);
 
     final isLoading = ref.watch(isLoadingProvider);
 
@@ -70,46 +73,64 @@ class HomeView extends HookConsumerWidget {
       });
     }, [isConnected]);
 
+    useEffect(() {
+      if (list.isEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _scaffoldKey.currentState?.openDrawer();
+        });
+      }
+    }, [list]);
+
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: kWhite,
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-          GestureDetector(
-            onVerticalDragUpdate: (details) {
-              if (!isMenuOpen && !isTopModalOpen && !isBottomModalOpen) {
-                if (details.delta.dy > 0) {
-                  // 下方向にスワイプ
-                  ref.read(isAddTaskModalOpenProvider.notifier).state = true;
+          SafeArea(
+            child: GestureDetector(
+              onVerticalDragUpdate: (details) {
+                if (!isMenuOpen && !isTopModalOpen && !isBottomModalOpen) {
+                  if (details.delta.dy > 0) {
+                    // 下方向にスワイプ
+                    ref.read(isAddTaskModalOpenProvider.notifier).state = true;
+                  }
+                  if (details.delta.dy < 0) {
+                    // 上方向にスワイプ
+                    ref.read(isBottomModalOpenProvider.notifier).state = true;
+                  }
                 }
-                if (details.delta.dy < 0) {
-                  // 上方向にスワイプ
-                  ref.read(isBottomModalOpenProvider.notifier).state = true;
-                }
-              }
-            },
-            child: Container(
-              decoration: BoxDecoration(color: kWhite),
-              child: SafeArea(
+              },
+              child: Container(
+                decoration: BoxDecoration(color: kWhite),
                 child: Column(
-                    children: !isLoading
-                        ? [
-                            TopBar(scaffoldKey: _scaffoldKey),
-                            Swiper(),
-                          ]
-                        : [
-                            SkeletonTopBar(),
-                            SkeletonMemoCard(),
-                          ]),
+                  children: !isLoading
+                      ? [
+                          TopBar(scaffoldKey: _scaffoldKey),
+                          list.isNotEmpty
+                              ? const Swiper()
+                              : const IrregularCard(
+                                  message: 'メモを登録してください',
+                                  icon: FeatherIcons.inbox),
+                        ]
+                      : [
+                          SkeletonTopBar(),
+                          SkeletonMemoCard(),
+                        ],
+                ),
               ),
             ),
           ),
-          const Menu(),
-          AddTaskModal(),
-          EditTaskModal(),
-          RenameMemoModal(),
-          RemoveMemoModal(),
+          if (list.isNotEmpty)
+            const Stack(
+              children: [
+                Menu(),
+                AddTaskModal(),
+                EditTaskModal(),
+                RenameMemoModal(),
+                RemoveMemoModal(),
+              ],
+            ),
           Toast(),
         ],
       ),

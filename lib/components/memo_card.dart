@@ -7,6 +7,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:memo_app_flutter/accessories/atomic_border.dart';
+import 'package:memo_app_flutter/components/irregular_card.dart';
 import 'package:memo_app_flutter/components/skeleton_memo_card.dart';
 import 'package:memo_app_flutter/components/sortable_list.dart';
 import 'package:memo_app_flutter/components/toast.dart';
@@ -281,27 +282,9 @@ class MemoLayout extends HookConsumerWidget {
           ),
         // リストが空配列のときの表示
         if (memo.value.tasks.isEmpty && !isLoading)
-          Container(
-            height: screenHeight(context) - 350,
-            alignment: Alignment.center,
-            child: const Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  FeatherIcons.fileMinus,
-                  size: 42,
-                  color: kGray500,
-                ),
-                SizedBox(
-                  height: 18,
-                ),
-                AtomicText(
-                  '登録されているタスクがありません',
-                  style: AtomicTextStyle.h5,
-                  type: AtomicTextColor.light,
-                ),
-              ],
-            ),
+          const IrregularCard(
+            message: '登録されているタスクがありません',
+            icon: FeatherIcons.fileMinus,
           ),
         // Container(
         //   decoration: BoxDecoration(color: Colors.pink),

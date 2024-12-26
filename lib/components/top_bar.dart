@@ -46,43 +46,44 @@ class TopBar extends HookConsumerWidget {
       }
     }
 
-    return memo != null
-        ? Container(
-            padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
-            decoration: const BoxDecoration(
-              // 下端に線を追加する
-              border: Border(bottom: AtomicBorder()),
-            ),
-            child: Row(
-              children: [
-                TopBarIconButton(
-                  icon: FeatherIcons.menu,
-                  onPressed: () {
-                    openDrawer();
-                  },
-                ),
-                const Spacer(),
-                !isLoading.value
-                    ? TopBarIconButton(
-                        icon: memo.tag ? Icons.bookmark : Icons.bookmark_border,
-                        onPressed: () {
-                          handleRestatusTag(!memo.tag);
-                        },
-                      )
-                    : LoadingCircleMini(),
-                const SizedBox(
-                  width: 18,
-                ),
-                TopBarIconButton(
-                  icon: FeatherIcons.moreVertical,
-                  onPressed: () {
-                    ref.read(isMenuOpenProvider.notifier).state = true;
-                  },
-                ),
-              ],
-            ),
-          )
-        : SkeletonTopBar();
+    return Container(
+      padding: EdgeInsets.fromLTRB(16, 12, 16, 12),
+      decoration: const BoxDecoration(
+        // 下端に線を追加する
+        border: Border(bottom: AtomicBorder()),
+      ),
+      child: Row(
+        children: [
+          TopBarIconButton(
+            icon: FeatherIcons.menu,
+            onPressed: () {
+              openDrawer();
+            },
+          ),
+          const Spacer(),
+          if (memo != null)
+            Row(children: [
+              !isLoading.value
+                  ? TopBarIconButton(
+                      icon: memo.tag ? Icons.bookmark : Icons.bookmark_border,
+                      onPressed: () {
+                        handleRestatusTag(!memo.tag);
+                      },
+                    )
+                  : LoadingCircleMini(),
+              const SizedBox(
+                width: 18,
+              ),
+              TopBarIconButton(
+                icon: FeatherIcons.moreVertical,
+                onPressed: () {
+                  ref.read(isMenuOpenProvider.notifier).state = true;
+                },
+              ),
+            ])
+        ],
+      ),
+    );
   }
 }
 

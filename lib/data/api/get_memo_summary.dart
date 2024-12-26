@@ -2,6 +2,7 @@ import 'package:memo_app_flutter/data/http.dart';
 import 'dart:convert';
 
 import 'package:memo_app_flutter/types/type.dart';
+import 'package:memo_app_flutter/utils/local_storage.dart';
 
 Future<List<MemoSummaryType>> getMemoSummary() async {
   final response = await clientRequest('/memo-summary');

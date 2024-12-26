@@ -24,7 +24,7 @@ class Navigation extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final List<MemoSummaryType> list = ref.watch(memoSummariesProvider);
     final int page = ref.watch(memoPageProvider);
-    final ValueNotifier<bool> isAddMemo = useState(false);
+    final ValueNotifier<bool> isAddMemo = useState(list.isEmpty);
     FocusNode myFocusNode = FocusNode();
     useEffect(() {
       if (isAddMemo.value) myFocusNode.requestFocus();
@@ -42,18 +42,11 @@ class Navigation extends HookConsumerWidget {
       });
     }
 
-    final order = [
-      ...list
-          .where((element) => element.tag)
-          .toList()
-          .map((item) => item.id)
-          .toList(),
-      ...list
-          .where((element) => !element.tag)
-          .toList()
-          .map((item) => item.id)
-          .toList()
-    ];
+    final taggedList = list.where((element) => element.tag).toList();
+    final untaggedList = list.where((element) => !element.tag).toList();
+
+    final order =
+        [...taggedList, ...untaggedList].map((item) => item.id).toList();
 
     return Drawer(
       child: Container(
@@ -82,7 +75,7 @@ class Navigation extends HookConsumerWidget {
                         return false;
                       },
                       child: SingleChildScrollView(
-                        physics: AlwaysScrollableScrollPhysics(),
+                        physics: const AlwaysScrollableScrollPhysics(),
                         child: Container(
                           margin: const EdgeInsets.only(top: 100),
                           constraints: BoxConstraints(
@@ -93,34 +86,27 @@ class Navigation extends HookConsumerWidget {
                               border: Border(top: AtomicBorder())),
                           child: Column(
                             children: [
-                              MemoListBox(
-                                isTagged: true,
-                                memoList: list
-                                    .where((element) => element.tag)
-                                    .toList()
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
-                                  int index = entry.key;
-                                  MemoSummaryType memo = entry.value;
-                                  return MemoListBlock(
-                                    text: memo.name,
-                                    length: memo.length,
-                                    isFocused:
-                                        page == index && !isAddMemo.value,
-                                    jumpPage: index,
-                                  );
-                                }).toList(),
-                                order: order,
-                              ),
+                              if (taggedList.isNotEmpty)
+                                MemoListBox(
+                                  isTagged: true,
+                                  memoList:
+                                      taggedList.asMap().entries.map((entry) {
+                                    int index = entry.key;
+                                    MemoSummaryType memo = entry.value;
+                                    return MemoListBlock(
+                                      text: memo.name,
+                                      length: memo.length,
+                                      isFocused:
+                                          page == index && !isAddMemo.value,
+                                      jumpPage: index,
+                                    );
+                                  }).toList(),
+                                  order: order,
+                                ),
                               MemoListBox(
                                 isTagged: false,
-                                memoList: list
-                                    .where((memo) => !memo.tag)
-                                    .toList()
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
+                                memoList:
+                                    untaggedList.asMap().entries.map((entry) {
                                   int index = entry.key +
                                       list
                                           .where((element) => element.tag)
@@ -204,11 +190,13 @@ class MemoListBox extends HookConsumerWidget {
 
     final TextEditingController textController = useTextEditingController();
 
-    int pageId = order[ref.read(memoPageProvider)];
+    int? pageId = order.isNotEmpty ? order[ref.read(memoPageProvider)] : null;
     Future<void> memoOrderOverride(List<int> data) async {
       putMemoOrderOverride(data).catchError((error) {}).whenComplete(() async {
         await fetchMemoSummaries(ref);
-        ref.read(memoPageProvider.notifier).state = data.indexOf(pageId);
+        if (pageId != null) {
+          ref.read(memoPageProvider.notifier).state = data.indexOf(pageId);
+        }
       });
     }
 

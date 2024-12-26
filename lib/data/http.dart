@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 Future<http.Response> clientRequest(String path,
     {String method = 'GET', Map<String, dynamic>? data}) async {
-  var uri = Uri.parse('http://34.146.93.87:8080$path');
+  var uri = Uri.parse('http://34.146.93.87:8081$path');
 
   // await Future.delayed(Duration(milliseconds: 500));
 
